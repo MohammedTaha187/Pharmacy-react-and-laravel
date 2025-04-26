@@ -1,0 +1,136 @@
+.shoppingCart {
+    text-align: center;
+    padding: 40px 20px;
+    background-color: #f0fdf4; /* Light green background */
+}
+
+.title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #2d6a4f; /* Dark green */
+    margin-bottom: 20px;
+}
+
+.boxContainer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+}
+
+.box {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 250px;
+    text-align: center;
+    border: 2px solid transparent;
+    transition: all 0.3s ease-in-out;
+}
+
+.box:hover {
+    border-color: #95d5b2; /* Light green */
+    transform: scale(1.05);
+}
+
+.box img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+}
+
+.name {
+    font-size: 18px;
+    font-weight: bold;
+    color: #1b4332;
+    margin: 10px 0;
+}
+
+.price {
+    font-size: 16px;
+    color: #2d6a4f;
+}
+
+.qty {
+    width: 60px;
+    padding: 5px;
+    text-align: center;
+    border: 1px solid #2d6a4f;
+    border-radius: 5px;
+}
+
+.flexBtn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.deleteBtn {
+    background: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.deleteBtn:hover {
+    background: darkred;
+}
+
+.subTotal {
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.cartTotal {
+    margin-top: 20px;
+}
+
+.cartTotal p {
+    font-size: 20px;
+    font-weight: bold;
+    color: #1b4332;
+}
+
+.optionBtn,
+.btn {
+    display: inline-block;
+    margin: 10px;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.optionBtn {
+    background: #2d6a4f;
+    color: white;
+}
+
+.btn {
+    background: #28a745;
+    color: white;
+}
+
+.btn.disabled,
+.deleteBtn.disabled {
+    background: gray;
+    cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+    .boxContainer {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .box {
+        width: 90%;
+        max-width: 300px;
+    }
+}
