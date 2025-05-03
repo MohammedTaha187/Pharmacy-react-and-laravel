@@ -23,7 +23,7 @@ export default function QuickView() {
           return;
         }
 
-        const response = await axios.get(`http://127.0.0.1:8000/api/products/${productId}`, {
+        const response = await axios.get(`/api/products/${productId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
             Accept: "application/json",
@@ -53,7 +53,7 @@ export default function QuickView() {
       }
 
       await axios.post(
-        "http://127.0.0.1:8000/api/cart",
+        "/api/cart",
         {
           product_id: productId,
           quantity: quantity,

@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import axios from '../../axiosInstance'; // تأكد إن ده المسار الصحيح للـ axiosInstance
+import axios from '../../axiosInstance';
 import { useNavigate } from 'react-router-dom';
-import toast from 'react-hot-toast'; // للتنبيه في حالة حدوث أي خطأ
+import toast from 'react-hot-toast';
 import styles from './Checkout.module.css';
 
 const Checkout = () => {
   const [cartItems, setCartItems] = useState([]);
-  const [cartTotal, setCartTotal] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState('cash_on_delivery');
   const [address, setAddress] = useState({
     flat: '',
@@ -22,7 +21,7 @@ const Checkout = () => {
         const token = localStorage.getItem('token');
         if (!token) return;
 
-        const response = await axios.get('http://127.0.0.1:8000/api/cart', {
+        const response = await axios.get('/api/cart', {
           headers: {
             Authorization: `Bearer ${token}`,
             Accept: 'application/json',
@@ -31,18 +30,23 @@ const Checkout = () => {
 
         const items = response.data.cart || [];
         setCartItems(items);
-
-        const total = items.reduce(
-          (sum, item) => sum + item.product.price * item.quantity,
-          0
-        );
-        setCartTotal(total);
       } catch (error) {
         console.error('Error fetching cart items:', error);
       }
     };
 
     fetchCartItems();
+  }, []);
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentStatus = urlParams.get('payment');
+
+    if (paymentStatus === 'paypal_success') {
+      handleOrderSubmit(null, 'paid');
+    } else if (paymentStatus === 'paypal_error') {
+      toast.error('فشل الدفع عبر PayPal');
+    }
   }, []);
 
   const handleOrderSubmit = async (event, paymentStatusFromPayPal = null) => {
@@ -54,12 +58,10 @@ const Checkout = () => {
 
       const formattedAddress = `${address.flat}, ${address.city}, ${address.country}`;
       if (!formattedAddress || !address.city || !address.country || !address.flat) {
-        console.error('Address is incomplete');
         return;
       }
 
       if (cartItems.length === 0) {
-        console.error('Cart is empty');
         return;
       }
 
@@ -74,7 +76,7 @@ const Checkout = () => {
         address: formattedAddress,
         delivery_address: formattedAddress,
         payment_method: paymentMethod,
-        payment_status: paymentStatus, // دايمًا موجود
+        payment_status: paymentStatus,
         status: 'pending',
         items: cartItems.map((item) => ({
           product_id: item.product.id,
@@ -82,9 +84,7 @@ const Checkout = () => {
         })),
       };
 
-      console.log('Order Data:', orderData);
-
-      const response = await axios.post('http://127.0.0.1:8000/api/orders', orderData, {
+      const response = await axios.post('/api/orders', orderData, {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: 'application/json',
@@ -92,8 +92,6 @@ const Checkout = () => {
       });
 
       if (response && response.data) {
-        console.log('Order Response:', response.data);
-
         await axios.post('/cart/clear', {}, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -103,8 +101,6 @@ const Checkout = () => {
 
         setCartItems([]);
         navigate('/orders');
-      } else {
-        console.error('Unexpected response format:', response);
       }
     } catch (error) {
       console.error('Order submission failed:', error.response?.data?.errors || error.message);
@@ -114,25 +110,32 @@ const Checkout = () => {
   const handlePayWithPaypal = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://127.0.0.1:8000/api/paypal/payment', {
+      if (!token) {
+        toast.error('يرجى تسجيل الدخول أولاً');
+        navigate('/login');
+        return;
+      }
+
+      const res = await axios.get('/api/paypal/payment', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        maxRedirects: 0,
         validateStatus: (status) => status >= 200 && status < 400,
       });
 
       if (res.status === 302 && res.headers.location) {
-        window.location.href = res.headers.location; // إعادة التوجيه إلى PayPal
+        window.location.href = res.headers.location;
       } else {
         toast.error('فشل بدء عملية الدفع');
       }
     } catch (error) {
-      toast.error('حدث خطأ أثناء الاتصال بـ PayPal');
-      console.error(error);
+      if (error.response && error.response.status === 302 && error.response.headers.location) {
+        window.location.href = error.response.headers.location;
+      } else {
+        toast.error('حدث خطأ أثناء الاتصال بـ PayPal');
+      }
     }
   };
-
 
   return (
     <div className={styles.checkoutPage}>

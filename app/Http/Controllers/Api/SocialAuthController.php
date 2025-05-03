@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Api;
 
 use App\Models\User;
@@ -12,41 +11,38 @@ class SocialAuthController extends Controller
 {
     public function redirectToGoogle()
     {
-        return Socialite::driver('google')->stateless()->redirect(); // ✅ يحول مباشرة على صفحة جوجل
+        return Socialite::driver('google')->stateless()->redirect(); 
     }
 
     public function handleGoogleCallback(Request $request)
-{
-    try {
-        $googleUser = Socialite::driver('google')->stateless()->user();
+    {
+        try {
+            $googleUser = Socialite::driver('google')->stateless()->user();
 
-        if (!$googleUser || !$googleUser->getEmail()) {
-            return redirect()->away('http://localhost:5173/login?error=google_login_failed');
+            if (!$googleUser || !$googleUser->getEmail()) {
+                return redirect()->away('http://localhost:5173/login?error=google_login_failed');
+            }
+
+            $user = User::updateOrCreate(
+                ['email' => $googleUser->getEmail()],
+                [
+                    'name' => $googleUser->getName(),
+                    'password' => $this->getUserPassword($googleUser->getEmail()),
+                    'image' => $googleUser->getAvatar(),
+                    'email_verified_at' => now(),
+                    'social_id' => $googleUser->getId(),
+                    'social_type' => 'google',
+                ]
+            );
+
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            // Redirect to frontend with token in URL
+            return redirect()->away("http://localhost:5173/social-auth?token=$token");
+        } catch (\Exception $e) {
+            return redirect()->away('http://localhost:5173/login?error=something_went_wrong');
         }
-
-        $user = User::updateOrCreate(
-            ['email' => $googleUser->getEmail()],
-            [
-                'name' => $googleUser->getName(),
-                'password' => Hash::make(uniqid()),
-                'image' => $googleUser->getAvatar(),
-                'email_verified_at' => now(),
-                'social_id' => $googleUser->getId(),
-                'social_type' => 'google',
-            ]
-        );
-
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        // Redirect to frontend with token in URL
-        return redirect()->away("http://localhost:5173/social-auth?token=$token");
-    } catch (\Exception $e) {
-        return redirect()->away('http://localhost:5173/login?error=something_went_wrong');
     }
-}
-
-
-
 
     // 🟦 Facebook methods below
 
@@ -61,14 +57,14 @@ class SocialAuthController extends Controller
             $facebookUser = Socialite::driver('facebook')->stateless()->user();
 
             if (!$facebookUser || !$facebookUser->getEmail()) {
-                return redirect()->away('https://localhost:5173/login?error=facebook_login_failed');
+                return redirect()->away('http://localhost:5173/login?error=facebook_login_failed');
             }
 
             $user = User::updateOrCreate(
                 ['email' => $facebookUser->getEmail()],
                 [
                     'name' => $facebookUser->getName(),
-                    'password' => Hash::make(uniqid()),
+                    'password' => $this->getUserPassword($facebookUser->getEmail()),
                     'image' => $facebookUser->getAvatar(),
                     'email_verified_at' => now(),
                     'social_id' => $facebookUser->getId(),
@@ -86,4 +82,13 @@ class SocialAuthController extends Controller
         }
     }
 
+    // Helper method to handle user password logic
+    private function getUserPassword($email)
+    {
+        $user = User::where('email', $email)->first();
+        if (!$user) {
+            return Hash::make(uniqid());
+        }
+        return $user->password;
+    }
 }

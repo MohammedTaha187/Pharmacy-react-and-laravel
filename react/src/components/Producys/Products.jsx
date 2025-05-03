@@ -7,7 +7,7 @@ export default function Products() {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
-    const [addingToCartId, setAddingToCartId] = useState(null); // علشان نعرف مين المنتج اللي بنديفه حاليا
+    const [addingToCartId, setAddingToCartId] = useState(null);
     const location = useLocation();
 
     useEffect(() => {
@@ -24,7 +24,7 @@ export default function Products() {
                 const searchParams = new URLSearchParams(location.search);
                 const categoryId = searchParams.get("category");
 
-                let apiUrl = "http://127.0.0.1:8000/api/products";
+                let apiUrl = "/api/products";
                 if (categoryId) {
                     apiUrl += `?category=${categoryId}`;
                 }
@@ -38,7 +38,6 @@ export default function Products() {
 
                 setProducts(response.data.data);
             } catch (err) {
-                console.error("❌ Error fetching products:", err);
                 if (err.response) {
                     setError(err.response.data.message || "⚠️ Unauthorized access.");
                 } else {
@@ -63,7 +62,7 @@ export default function Products() {
             }
 
             const response = await axios.post(
-                "http://127.0.0.1:8000/api/cart", // هنا POST وده اللينك الصح
+                "/api/cart",
                 {
                     product_id: productId,
                     quantity: 1,
@@ -76,11 +75,9 @@ export default function Products() {
                 }
             );
 
-            console.log("✅ Product added to cart:", response.data);
             alert("✅ Product added to cart successfully!");
 
         } catch (err) {
-            console.error("❌ Error adding to cart:", err);
             if (err.response?.data?.message) {
                 alert(`❌ ${err.response.data.message}`);
             } else {
@@ -90,8 +87,6 @@ export default function Products() {
             setAddingToCartId(null);
         }
     };
-
-
 
     return (
         <div className="container py-5">

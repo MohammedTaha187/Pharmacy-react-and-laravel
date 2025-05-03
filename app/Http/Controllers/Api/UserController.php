@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
+use Storage;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash; // إضافة Hash للتأكد من كلمة المرور القديمة
 use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Facades\Hash; // إضافة Hash للتأكد من كلمة المرور القديمة
 
 class UserController extends Controller
 {
@@ -87,44 +88,44 @@ class UserController extends Controller
     {
         try {
             $user = Auth::user();
-
+    
             // التحقق من المدخلات
             $request->validate([
                 'name' => 'string|max:255',
                 'email' => 'string|email|unique:users,email,' . $user->id,
-                'oldPassword' => 'string|min:8',
+                'oldPassword' => 'nullable|string|min:8', // جعلها nullable
                 'newPassword' => 'nullable|string|min:8|confirmed',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
-
-            // التحقق من كلمة المرور القديمة
-            if (!Hash::check($request->oldPassword, $user->password)) {
+    
+            // التحقق من كلمة المرور القديمة فقط إذا كانت موجودة
+            if ($request->oldPassword && !Hash::check($request->oldPassword, $user->password)) {
                 return response()->json(['message' => 'كلمة المرور القديمة غير صحيحة'], 400);
             }
-
+    
             // تغيير كلمة المرور الجديدة إذا كانت موجودة
             if ($request->newPassword) {
                 $user->password = bcrypt($request->newPassword);
             }
-
+    
             // رفع الصورة الجديدة إن وجدت
             if ($request->hasFile('image')) {
                 // حذف الصورة القديمة إن وُجدت
-                if ($user->image && \Storage::disk('public')->exists($user->image)) {
+                if ($user->image && Storage::disk('public')->exists($user->image)) {
                     \Storage::disk('public')->delete($user->image);
                 }
-
+    
                 $image = $request->file('image');
                 $imageName = time() . '_' . $image->getClientOriginalName();
                 $imagePath = $image->storeAs('profile_images', $imageName, 'public');
                 $user->image = $imagePath;
             }
-
+    
             // تحديث البيانات الأخرى
             $user->name = $request->name;
             $user->email = $request->email;
             $user->save();
-
+    
             return response()->json([
                 'message' => 'تم تحديث الملف الشخصي بنجاح',
                 'user' => new UserResource($user),
@@ -136,6 +137,7 @@ class UserController extends Controller
             ], 500);
         }
     }
+    
 
 
 }

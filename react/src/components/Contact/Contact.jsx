@@ -18,7 +18,7 @@ const Contact = () => {
 
     const fetchMessages = async () => {
       try {
-        const res = await axios.get("http://127.0.0.1:8000/api/messages", {
+        const res = await axios.get("/api/messages", {
           headers: {
             Authorization: `Bearer ${token}`,
             Accept: "application/json",
@@ -57,7 +57,7 @@ const Contact = () => {
 
     try {
       const res = await axios.post(
-        "http://127.0.0.1:8000/api/messages",
+        "/api/messages",
         { message },
         {
           headers: {
@@ -79,7 +79,7 @@ const Contact = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://127.0.0.1:8000/api/messages/${id}`, {
+      await axios.delete(`/api/messages/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

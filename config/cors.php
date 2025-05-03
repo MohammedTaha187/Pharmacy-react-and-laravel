@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'uploads/*', 'paypal/payment'],
+    'paths' => ['api/*', 'uploads/*', 'paypal/'],
 
 
     'allowed_methods' => ['*'],

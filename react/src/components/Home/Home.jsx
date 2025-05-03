@@ -24,7 +24,7 @@ export default function Home() {
     // تحميل التصنيفات
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/api/categories");
+        const response = await axios.get("/api/categories");
         console.log("API Response:", response.data);
         setCategories(response.data.data);
       } catch (err) {
@@ -45,7 +45,7 @@ export default function Home() {
 
         try {
           const response = await axios.get(
-            `http://127.0.0.1:8000/api/products/search?query=${search}`
+            `/api/products/search?query=${search}`
           );
 
           console.log("Products Search Response:", response.data);

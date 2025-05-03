@@ -27,6 +27,7 @@ const Header = () => {
             },
             signal,
           });
+          console.log("User data:", response.data); // Log data for debugging
           setUser(response.data);
         } catch (error) {
           if (error.name !== "AbortError") {
@@ -44,7 +45,6 @@ const Header = () => {
             Accept: "application/json",
           },
         });
-
         const items = response.data.cart || [];
         setCartItems(items.length);
       } catch (error) {
@@ -103,6 +103,15 @@ const Header = () => {
     };
   }, []);
 
+  const handlePayPalPayment = () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login"); // إذا لم يكن هناك token، يوجه إلى صفحة الدخول
+    } else {
+      // تابع عملية الدفع عبر PayPal هنا
+    }
+  };
+
   return (
     <header className={`${styles.header} bg-white shadow-sm py-3 border-bottom`}>
       <div className={styles.container}>
@@ -132,16 +141,15 @@ const Header = () => {
               }}
             >
               {user?.data?.image ? (
-  <img
-    src={`http://127.0.0.1:8000/storage/${user.data.image}`}
-    alt="User"
-    className="rounded-circle"
-    style={{ width: "40px", height: "40px", objectFit: "cover" }}
-  />
-) : (
-  <User size={28} />
-)}
-
+                <img
+                  src={`http://127.0.0.1:8000/storage/${user.data.image}`}
+                  alt="User"
+                  className="rounded-circle"
+                  style={{ width: "40px", height: "40px", objectFit: "cover" }}
+                />
+              ) : (
+                <User size={28} />
+              )}
             </button>
 
             {showProfile && user && (

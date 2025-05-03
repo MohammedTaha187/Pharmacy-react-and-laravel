@@ -11,7 +11,7 @@ const ShoppingCart = () => {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await axios.get("/cart", {
+      const response = await axios.get("api/cart", {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: "application/json",
