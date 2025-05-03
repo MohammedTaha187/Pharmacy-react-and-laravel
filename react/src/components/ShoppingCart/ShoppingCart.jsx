@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import axios from "../../axiosInstance"; // خلي بالك، دي النسخة المعدلة اللي فيها التوكين لو موجود
+import axios from "../../axiosInstance";
 import styles from "./ShoppingCart.module.css";
 
 const ShoppingCart = () => {
@@ -19,15 +19,14 @@ const ShoppingCart = () => {
       });
 
       const items = response.data.cart.map((item) => ({
-        id: item.id, // هنا الايدى اللى رجع من الباك
-        cartItemId: item.id, // هنا كمان
+        id: item.id,
+        cartItemId: item.id,
         productId: item.product.id,
         name: item.product.name.en,
         price: item.product.price,
         image: item.product.image,
         quantity: item.quantity,
       }));
-
 
       setCartItems(items);
     } catch (error) {
@@ -46,8 +45,14 @@ const ShoppingCart = () => {
   const updateQuantity = async (cartItemId, newQty) => {
     try {
       const token = localStorage.getItem("token");
-
-      await axios.put(`/cart/${cartItemId}`, {
+  
+      setCartItems(prevItems =>
+        prevItems.map(item =>
+          item.cartItemId === cartItemId ? { ...item, quantity: newQty } : item
+        )
+      );
+  
+      await axios.put(`/api/cart/${cartItemId}`, {
         quantity: newQty,
       }, {
         headers: {
@@ -55,50 +60,59 @@ const ShoppingCart = () => {
           Accept: "application/json",
         },
       });
-
-      fetchCart(); // رجع الكارت بعد التعديل
+  
+      fetchCart();
     } catch (error) {
       console.error("❌ Error updating quantity:", error);
     }
   };
-
-
+  
   const removeFromCart = async (cartItemId) => {
     try {
       const token = localStorage.getItem("token");
-
-      await axios.delete(`/cart/${cartItemId}`, {
+  
+      setCartItems(prevItems =>
+        prevItems.filter(item => item.cartItemId !== cartItemId)
+      );
+  
+      await axios.delete(`/api/cart/${cartItemId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: "application/json",
         },
       });
-
-      fetchCart(); // رجع الكارت بعد الحذف
+  
+      fetchCart();
     } catch (error) {
       console.error("❌ Error removing item:", error);
     }
   };
-
-
+  
   const clearCart = async () => {
     try {
       const token = localStorage.getItem("token");
-
-      await axios.post("/cart/clear", {}, {
+  
+      await axios.post("/api/cart/clear", {}, {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: "application/json",
         },
       });
-
+  
       setCartItems([]);
     } catch (error) {
       console.error("❌ Error clearing cart:", error);
     }
   };
 
-  if (loading) return <div className="text-center">Loading cart...</div>;
+  if (loading) {
+    return (
+      <div className="text-center">
+        <div className={styles.loadingSpinner}></div>
+        <p>Loading cart...</p>
+      </div>
+    );
+  }
 
   return (
     <section className={styles.shoppingCart}>
@@ -108,7 +122,7 @@ const ShoppingCart = () => {
         {cartItems.length > 0 ? (
           cartItems.map((item) => (
             <div key={item.cartItemId} className={styles.box}>
-             <Link to={`/quickView/${item.productId}`} className="fas fa-eye"></Link>
+              <Link to={`/quickView/${item.productId}`} className="fas fa-eye"></Link>
 
               <img src={item.image} alt={item.name} />
               <div className={styles.name}>{item.name}</div>

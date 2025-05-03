@@ -10,34 +10,29 @@ use App\Http\Resources\ProductResource;
 class CartController extends Controller
 {
     public function addToCart(Request $request)
-{
-    $request->validate([
-        'product_id' => 'required|exists:products,id',
-        'quantity' => 'required|integer|min:1',
-    ]);
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'quantity' => 'required|integer|min:1',
+        ]);
 
-    // تحقق من وجود المنتج في السلة
-    $existingItem = CartItem::where('user_id', Auth::id())
-        ->where('product_id', $request->product_id)
-        ->first();
+        $existingItem = CartItem::where('user_id', Auth::id())
+            ->where('product_id', $request->product_id)
+            ->first();
 
-    if ($existingItem) {
-        return response()->json(['message' => 'Product already in cart'], 400);
+        if ($existingItem) {
+            return response()->json(['message' => 'Product already in cart'], 400);
+        }
+
+        $cartItem = CartItem::create([
+            'user_id' => Auth::id(),
+            'product_id' => $request->product_id,
+            'quantity' => $request->quantity,
+        ]);
+
+        return response()->json(['message' => 'Product added to cart successfully!', 'cart' => $cartItem]);
     }
 
-    $cartItem = CartItem::create([
-        'user_id' => Auth::id(),
-        'product_id' => $request->product_id,
-        'quantity' => $request->quantity,
-    ]);
-
-    return response()->json(['message' => 'Product added to cart successfully!', 'cart' => $cartItem]);
-}
-
-
-    /**
-     * جلب محتويات السلة
-     */
     public function getCart()
     {
         $cartItems = CartItem::where('user_id', Auth::id())->with('product')->get();
@@ -53,9 +48,6 @@ class CartController extends Controller
         ]);
     }
 
-    /**
-     * تحديث كمية منتج في السلة
-     */
     public function updateCart(Request $request, $id)
     {
         $cartItem = CartItem::where('user_id', Auth::id())->where('id', $id)->first();
@@ -69,9 +61,6 @@ class CartController extends Controller
         return response()->json(['message' => __('lang.cart updated'), 'cart' => $cartItem]);
     }
 
-    /**
-     * إزالة منتج من السلة
-     */
     public function removeFromCart($id)
     {
         $cartItem = CartItem::where('user_id', Auth::id())->where('id', $id)->first();
@@ -85,9 +74,6 @@ class CartController extends Controller
         return response()->json(['message' => __('lang.removed from cart')]);
     }
 
-    /**
-     * تفريغ السلة بالكامل
-     */
     public function clearCart()
     {
         CartItem::where('user_id', Auth::id())->delete();

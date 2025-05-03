@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "../../axiosInstance";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { PuffLoader } from "react-spinners";
+import "./Home.css";
 
 export default function Home() {
   const [categories, setCategories] = useState([]);
@@ -14,21 +15,17 @@ export default function Home() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // التحقق من وجود التوكن
     const token = localStorage.getItem("token");
     if (!token) {
-      navigate("/login"); // إذا لم يكن هناك توكن، اعادة التوجيه إلى صفحة التسجيل
+      navigate("/login");
       return;
     }
 
-    // تحميل التصنيفات
     const fetchCategories = async () => {
       try {
         const response = await axios.get("/api/categories");
-        console.log("API Response:", response.data);
         setCategories(response.data.data);
       } catch (err) {
-        console.error("Error fetching categories:", err);
         setError("⚠️ Failed to load categories.");
       } finally {
         setLoading(false);
@@ -41,26 +38,21 @@ export default function Home() {
   useEffect(() => {
     const fetchProducts = async () => {
       if (search.trim() !== "") {
-        console.log("Searching for:", search); // تحقق من القيمة المرسلة
-
         try {
           const response = await axios.get(
             `/api/products/search?query=${search}`
           );
-
-          console.log("Products Search Response:", response.data);
           setProducts(response.data.data);
         } catch (err) {
-          console.error("Error searching products:", err);
           setError("⚠️ Failed to search products.");
         }
       } else {
-        setProducts([]); // إذا كانت خانة البحث فارغة، أعد تعيين المنتجات
+        setProducts([]);
       }
     };
 
     fetchProducts();
-  }, [search]); // Trigger search when `search` changes
+  }, [search]);
 
   return (
     <div className="container text-center py-5">
@@ -73,14 +65,14 @@ export default function Home() {
 
       <form
         className="homeSearchForm input-group my-4 w-50 mx-auto"
-        onSubmit={(e) => e.preventDefault()} // Prevent form submission
+        onSubmit={(e) => e.preventDefault()}
       >
         <input
           type="text"
           className="form-control border-primary"
           placeholder="🔍 Search for products..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)} // Update search state on input change
+          onChange={(e) => setSearch(e.target.value)}
         />
         <button type="submit" className="btn btn-primary">
           Search
@@ -138,8 +130,7 @@ export default function Home() {
                 </div>
               </div>
             ))
-          : !loading &&
-            !error && (
+          : !loading && !error && (
               <p className="text-muted fw-bold my-5">🚫 No categories available.</p>
             )}
       </div>
@@ -148,7 +139,7 @@ export default function Home() {
         {products.length > 0 ? (
           products.map((product) => (
             <div key={product.id} className="col-md-3">
-              <div className="card">
+              <div className="card h-100">
                 <img
                   src={product.image || "/images/placeholder.png"}
                   className="card-img-top"

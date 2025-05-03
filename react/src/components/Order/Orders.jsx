@@ -4,9 +4,9 @@ import "./orders.css";
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);  // State للتحقق من التحميل
   const [error, setError] = useState(null);
-  const [ratings, setRatings] = useState({}); // <== هنا هنخزن كل Rating لكل أوردر
+  const [ratings, setRatings] = useState({}); // لتخزين كل Rating لكل أوردر
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -36,7 +36,7 @@ const Orders = () => {
         setError('Error fetching orders');
         console.error(err.response?.data || err.message);
       } finally {
-        setLoading(false);
+        setLoading(false); // تأكد من إيقاف اللودينج بعد تحميل البيانات
       }
     };
 
@@ -70,7 +70,6 @@ const Orders = () => {
     }
   };
 
-  // Function to handle order cancellation (delete)
   const handleCancelOrder = async (orderId) => {
     const token = localStorage.getItem('token');
 
@@ -82,7 +81,6 @@ const Orders = () => {
       });
 
       if (response.status === 200) {
-        // Update the state to remove the cancelled order
         setOrders((prevOrders) => prevOrders.filter(order => order.id !== orderId));
         alert("Order cancelled successfully!");
       }
@@ -95,72 +93,79 @@ const Orders = () => {
   return (
     <section className="placed-orders">
       <h1 className="title">Placed Orders</h1>
-      <div className="box-container">
-        {loading ? (
-          <p>Loading...</p>
-        ) : error ? (
-          <p className="error">{error}</p>
-        ) : orders.length > 0 ? (
-          orders.map((order) => (
-            <div key={order.id} className="box">
-              <p>Ordered on: <span>{order.created_at}</span></p>
-              <p>Order Number: <span>{order.order_number}</span></p>
-              <p>Status: <span>{order.status}</span></p>
-              <p>Payment Method: <span>{order.payment_method}</span></p>
-              <p>Payment Status:
-                <span style={{ color: order.payment_status === "unpaid" ? "red" : "green" }}>
-                  {order.payment_status}
-                </span>
-              </p>
 
-              <div className="products">
-                <h3>Products:</h3>
-                {order.products && order.products.length > 0 ? (
-                  order.products.map((product, index) => (
-                    <div key={index} className="product-item">
-                      <p>Product Name: <span>{JSON.parse(product.name).en}</span></p>
-                      <p>Quantity: <span>{product.quantity}</span></p>
-                      <p>Price: <span>${product.price}</span></p>
-                    </div>
-                  ))
-                ) : (
-                  <p>No products found.</p>
-                )}
+      {/* في حالة التحميل */}
+      {loading ? (
+        <div className="loadingContainer">
+          <div className="loadingSpinner"></div>
+          <p>Loading orders...</p>
+        </div>
+      ) : (
+        <div className="box-container">
+          {error ? (
+            <p className="error">{error}</p>
+          ) : orders.length > 0 ? (
+            orders.map((order) => (
+              <div key={order.id} className="box">
+                <p>Ordered on: <span>{order.created_at}</span></p>
+                <p>Order Number: <span>{order.order_number}</span></p>
+                <p>Status: <span>{order.status}</span></p>
+                <p>Payment Method: <span>{order.payment_method}</span></p>
+                <p>Payment Status:
+                  <span style={{ color: order.payment_status === "unpaid" ? "red" : "green" }}>
+                    {order.payment_status}
+                  </span>
+                </p>
+
+                <div className="products">
+                  <h3>Products:</h3>
+                  {order.products && order.products.length > 0 ? (
+                    order.products.map((product, index) => (
+                      <div key={index} className="product-item">
+                        <p>Product Name: <span>{JSON.parse(product.name).en}</span></p>
+                        <p>Quantity: <span>{product.quantity}</span></p>
+                        <p>Price: <span>${product.price}</span></p>
+                      </div>
+                    ))
+                  ) : (
+                    <p>No products found.</p>
+                  )}
+                </div>
+
+                {/* Rating Form */}
+                <form onSubmit={(e) => handleRatingSubmit(e, order.id)}>
+                  <label htmlFor={`rating-${order.id}`}>Rate this order:</label>
+                  <select
+                    id={`rating-${order.id}`}
+                    name="rating"
+                    value={ratings[order.id] || ''}
+                    onChange={(e) => handleRatingChange(order.id, e.target.value)}
+                  >
+                    <option value="">Select Rating</option>
+                    <option value="1">⭐ 1 Star</option>
+                    <option value="2">⭐⭐ 2 Stars</option>
+                    <option value="3">⭐⭐⭐ 3 Stars</option>
+                    <option value="4">⭐⭐⭐⭐ 4 Stars</option>
+                    <option value="5">⭐⭐⭐⭐⭐ 5 Stars</option>
+                  </select>
+                  <button type="submit">Submit Rating</button>
+                </form>
+
+                {/* Show Rating if exists */}
+                <p>Rating: <span>{order.rating ? `${order.rating} Stars` : "Not Rated Yet"}</span></p>
+
+                {/* Cancel Order Button */}
+                <button onClick={() => handleCancelOrder(order.id)} className="cancel-btn">
+                  Cancel Order
+                </button>
+
               </div>
-
-              {/* Rating Form */}
-              <form onSubmit={(e) => handleRatingSubmit(e, order.id)}>
-                <label htmlFor={`rating-${order.id}`}>Rate this order:</label>
-                <select
-                  id={`rating-${order.id}`}
-                  name="rating"
-                  value={ratings[order.id] || ''}
-                  onChange={(e) => handleRatingChange(order.id, e.target.value)}
-                >
-                  <option value="">Select Rating</option>
-                  <option value="1">⭐ 1 Star</option>
-                  <option value="2">⭐⭐ 2 Stars</option>
-                  <option value="3">⭐⭐⭐ 3 Stars</option>
-                  <option value="4">⭐⭐⭐⭐ 4 Stars</option>
-                  <option value="5">⭐⭐⭐⭐⭐ 5 Stars</option>
-                </select>
-                <button type="submit">Submit Rating</button>
-              </form>
-
-              {/* Show Rating if exists */}
-              <p>Rating: <span>{order.rating ? `${order.rating} Stars` : "Not Rated Yet"}</span></p>
-
-              {/* Cancel Order Button */}
-              <button onClick={() => handleCancelOrder(order.id)} className="cancel-btn">
-                Cancel Order
-              </button>
-
-            </div>
-          ))
-        ) : (
-          <p className="empty">No orders placed yet!</p>
-        )}
-      </div>
+            ))
+          ) : (
+            <p className="empty">No orders placed yet!</p>
+          )}
+        </div>
+      )}
     </section>
   );
 };

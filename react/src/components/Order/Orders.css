@@ -1,98 +1,103 @@
-/* Orders Page Styling */
 .placed-orders {
     padding: 2rem;
-    background-color: #f9f9f9;
-    min-height: 100vh;
-}
-
-.placed-orders .title {
+  }
+  
+  .title {
+    font-size: 2rem;
     text-align: center;
-    font-size: 2.5rem;
     margin-bottom: 2rem;
-    color: #333;
-}
-
-.placed-orders .box-container {
-    display: grid;
-    gap: 1.5rem;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-}
-
-.placed-orders .box {
-    background: #fff;
-    padding: 1.5rem;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.placed-orders .box p {
-    font-size: 1rem;
-    margin-bottom: 0.8rem;
-    color: #555;
-}
-
-.placed-orders .box p span {
-    font-weight: bold;
-    color: #000;
-}
-
-.placed-orders .products {
-    margin-top: 1rem;
+  }
+  
+  .box-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+  }
+  
+  .box {
+    background-color: #fff;
     padding: 1rem;
-    background: #f1f1f1;
     border-radius: 8px;
-}
-
-.placed-orders .product-item {
-    margin-bottom: 1rem;
-}
-
-.placed-orders .product-item p {
+    width: 300px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .box p {
     margin: 0.5rem 0;
-}
-
-.placed-orders form {
-    margin-top: 1rem;
-}
-
-.placed-orders form label {
-    display: block;
-    margin-bottom: 0.5rem;
+  }
+  
+  .product-item {
+    margin-bottom: 1rem;
+  }
+  
+  .product-item span {
     font-weight: bold;
-}
-
-.placed-orders form select {
-    width: 100%;
-    padding: 0.5rem;
-    margin-bottom: 0.8rem;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-}
-
-.placed-orders form button {
-    background-color: #28a745;
+  }
+  
+  button.cancel-btn {
+    background-color: #e74c3c;
     color: white;
-    padding: 0.6rem 1.2rem;
+    padding: 10px 20px;
     border: none;
-    border-radius: 6px;
+    border-radius: 5px;
     cursor: pointer;
-    font-weight: bold;
-}
-
-.placed-orders form button:hover {
-    background-color: #218838;
-}
-
-.placed-orders .error {
+    margin-top: 10px;
+  }
+  
+  button.cancel-btn:hover {
+    background-color: #c0392b;
+  }
+  
+  form select {
+    width: 100%;
+    padding: 5px;
+    margin-top: 10px;
+  }
+  
+  form button {
+    background-color: #3498db;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  form button:hover {
+    background-color: #2980b9;
+  }
+  
+  .error {
     color: red;
     text-align: center;
-    font-size: 1.2rem;
-}
-
-.placed-orders .empty {
+  }
+  
+  .empty {
     text-align: center;
-    font-size: 1.5rem;
-    color: gray;
-}
-
-/* Styling for Cancel Order*
+    font-size: 1.2rem;
+  }
+  
+  span {
+    font-weight: normal;
+  }
+  .loadingSpinner {
+    border: 8px solid #f3f3f3; /* خلفية فاتحة */
+    border-top: 8px solid #3498db; /* اللون الخاص بالدائرة */
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 2s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .loadingContainer {
+    text-align: center;
+    margin-top: 50px;
+  }
+    

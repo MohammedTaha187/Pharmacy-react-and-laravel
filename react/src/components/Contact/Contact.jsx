@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import axios from "../../axiosInstance"; 
+import axios from "../../axiosInstance";
 import EmojiPicker from "emoji-picker-react";
 import "./Contact.css";
 
@@ -30,6 +30,7 @@ const Contact = () => {
         }
       } catch (error) {
         console.error("Error fetching messages:", error);
+        setError("Error loading messages");
       }
     };
 
@@ -111,6 +112,12 @@ const Contact = () => {
           </div>
         ))}
       </div>
+
+      {loading && (
+        <div className="loadingContainer">
+          <div className="loadingSpinner"></div>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="chat-form">
         <div className="input-container">

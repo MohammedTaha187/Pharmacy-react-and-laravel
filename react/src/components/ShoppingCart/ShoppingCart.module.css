@@ -1,136 +1,120 @@
-.shoppingCart {
+/* دائرة دوارة (Loading Spinner) */
+.loadingSpinner {
+    border: 8px solid #f3f3f3; /* خلفية فاتحة */
+    border-top: 8px solid #3498db; /* اللون الخاص بالدائرة */
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 2s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  /* تأثير عند المرور على العنصر في السلة */
+  .box {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .box:hover {
+    transform: translateY(-10px); /* تحريك العنصر للأعلى عند المرور عليه */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* إضافة ظل للعنصر */
+  }
+  
+  /* تأثير عند المرور على الأزرار */
+  .deleteBtn:hover, .btn:hover {
+    background-color: #e74c3c; /* تغيير لون زر الحذف عند المرور عليه */
+    transition: background-color 0.3s ease;
+  }
+  
+  /* تأثير عند الضغط على الأزرار */
+  .btn:active, .deleteBtn:active {
+    background-color: #2980b9; /* تغيير اللون عند الضغط */
+  }
+  
+  /* تنسيق الـ shoppingCart */
+  .shoppingCart {
+    padding: 2rem;
+    background-color: #fafafa;
+  }
+  
+  .title {
     text-align: center;
-    padding: 40px 20px;
-    background-color: #f0fdf4; /* Light green background */
-}
-
-.title {
-    font-size: 28px;
-    font-weight: bold;
-    color: #2d6a4f; /* Dark green */
-    margin-bottom: 20px;
-}
-
-.boxContainer {
+    font-size: 2rem;
+    color: #333;
+  }
+  
+  .boxContainer {
     display: flex;
     flex-wrap: wrap;
+    gap: 1rem;
     justify-content: center;
-    gap: 15px;
-}
-
-.box {
-    background: white;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .box {
+    background-color: #fff;
     width: 250px;
+    padding: 1rem;
+    border-radius: 8px;
     text-align: center;
-    border: 2px solid transparent;
-    transition: all 0.3s ease-in-out;
-}
-
-.box:hover {
-    border-color: #95d5b2; /* Light green */
-    transform: scale(1.05);
-}
-
-.box img {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-}
-
-.name {
-    font-size: 18px;
+  }
+  
+  .name {
+    font-size: 1.2rem;
     font-weight: bold;
-    color: #1b4332;
-    margin: 10px 0;
-}
-
-.price {
-    font-size: 16px;
-    color: #2d6a4f;
-}
-
-.qty {
+    margin-top: 1rem;
+  }
+  
+  .price {
+    font-size: 1rem;
+    color: #333;
+  }
+  
+  .qty {
     width: 60px;
     padding: 5px;
     text-align: center;
-    border: 1px solid #2d6a4f;
-    border-radius: 5px;
-}
-
-.flexBtn {
+    margin-right: 10px;
+  }
+  
+  .flexBtn {
     display: flex;
     justify-content: space-between;
     align-items: center;
+  }
+  
+  .subTotal {
     margin-top: 10px;
-}
-
-.deleteBtn {
-    background: red;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
-.deleteBtn:hover {
-    background: darkred;
-}
-
-.subTotal {
-    font-size: 14px;
-    margin-top: 10px;
-}
-
-.cartTotal {
-    margin-top: 20px;
-}
-
-.cartTotal p {
-    font-size: 20px;
+    font-size: 1rem;
     font-weight: bold;
-    color: #1b4332;
-}
-
-.optionBtn,
-.btn {
-    display: inline-block;
-    margin: 10px;
+  }
+  
+  .cartTotal {
+    margin-top: 2rem;
+    text-align: center;
+  }
+  
+  .cartTotal p {
+    font-size: 1.2rem;
+  }
+  
+  .optionBtn, .btn, .deleteBtn {
+    background-color: #3498db;
+    color: white;
     padding: 10px 20px;
-    text-decoration: none;
+    border: none;
     border-radius: 5px;
-    font-size: 16px;
     cursor: pointer;
-}
-
-.optionBtn {
-    background: #2d6a4f;
-    color: white;
-}
-
-.btn {
-    background: #28a745;
-    color: white;
-}
-
-.btn.disabled,
-.deleteBtn.disabled {
-    background: gray;
+  }
+  
+  .optionBtn {
+    background-color: #2ecc71;
+  }
+  
+  .disabled {
+    background-color: #dcdcdc;
     cursor: not-allowed;
-}
-
-@media (max-width: 768px) {
-    .boxContainer {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .box {
-        width: 90%;
-        max-width: 300px;
-    }
-}
+  }
+  

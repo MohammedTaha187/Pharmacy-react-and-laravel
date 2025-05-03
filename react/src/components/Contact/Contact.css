@@ -1,75 +1,134 @@
 .contact {
-    max-width: 500px;
-    margin: auto;
-    padding: 20px;
-    border-radius: 10px;
-    background: #f8f9fa;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  }
+  max-width: 600px;
+  margin: auto;
+  padding: 20px;
+  border-radius: 15px;
+  background: #f5f5f5;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  font-family: 'Arial', sans-serif;
+}
 
-  .chat-box {
-    max-height: 400px;
-    overflow-y: auto;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-  }
+.chat-box {
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 
-  .message-container {
-    display: flex;
-    flex-direction: column;
-    max-width: 80%;
-    margin-bottom: 10px;
-  }
+.message-container {
+  display: flex;
+  flex-direction: column; /* ترتيب الرسالة والرد عموديًا */
+  padding: 10px;
+  border-radius: 15px;
+  position: relative;
+  margin-bottom: 10px;
+}
 
-  .user {
-    align-self: flex-end;
-    background-color: #dcf8c6;
-    padding: 10px;
-    border-radius: 10px;
-    text-align: right;
-  }
+.user {
+  align-self: flex-end; /* محاذاة الرسالة إلى اليمين */
+  background-color: #dcf8c6;
+  border-radius: 15px 15px 0 15px;
+  color: #333;
+  padding: 10px 20px;
+  margin-bottom: 10px; /* مسافة بين الرسالة والرد */
+  max-width: 70%; /* تحديد الحد الأقصى للعرض */
+}
 
-  .admin {
-    align-self: flex-start;
-    background-color: #fff;
-    padding: 10px;
-    border-radius: 10px;
-    text-align: left;
-  }
+.admin {
+  align-self: flex-start; /* محاذاة الرد إلى اليسار */
+  background-color: #ffffff;
+  border-radius: 15px 15px 15px 0;
+  color: #333;
+  padding: 10px 20px;
+  max-width: 70%; /* تحديد الحد الأقصى للعرض */
+}
 
-  .input-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+.message-text {
+  margin: 0;
+  font-size: 14px;
+}
 
-  .emoji-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 24px;
-  }
+.admin-reply {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #555;
+  opacity: 0.8;
+}
 
-  .box {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-  }
+.input-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  margin-top: 20px;
+}
 
-  .btn {
-    padding: 10px;
-    background: #28a745;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-  }
+.emoji-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  color: #777;
+}
 
-  .delete-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: red;
-  }
+.box {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 25px;
+  font-size: 14px;
+  resize: none;
+  transition: border 0.3s ease;
+}
+
+.box:focus {
+  border-color: #28a745;
+  outline: none;
+}
+
+.btn {
+  padding: 12px 20px;
+  background: #28a745;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  border-radius: 25px;
+  transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+  background-color: #218838;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: red;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.loadingSpinner {
+  border: 5px solid #f3f3f3; /* خلفية فاتحة */
+  border-top: 5px solid #3498db; /* اللون الخاص بالدائرة */
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
