@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "../../axiosInstance";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { PuffLoader } from "react-spinners";
-import "./Home.css";
 
 export default function Home() {
   const [categories, setCategories] = useState([]);
