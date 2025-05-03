@@ -168,7 +168,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         Laravel\Socialite\SocialiteServiceProvider::class,
-        // Srmklive\PayPal\Providers\PayPalServiceProvider::class,
+        Srmklive\PayPal\Providers\PayPalServiceProvider::class,
         // App\Providers\FortifyServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
     ])->toArray(),

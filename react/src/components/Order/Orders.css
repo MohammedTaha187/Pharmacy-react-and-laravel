@@ -1,61 +1,98 @@
+/* Orders Page Styling */
 .placed-orders {
+    padding: 2rem;
+    background-color: #f9f9f9;
+    min-height: 100vh;
+}
+
+.placed-orders .title {
     text-align: center;
-    padding: 20px;
-  }
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    color: #333;
+}
 
-  .title {
-    font-size: 28px;
-    color: #1e88e5;
-    margin-bottom: 20px;
-  }
+.placed-orders .box-container {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
 
-  .box-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-  }
-
-  .box {
+.placed-orders .box {
     background: #fff;
-    padding: 15px;
+    padding: 1.5rem;
     border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    width: 300px;
-    text-align: left;
-  }
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
 
-  .box p {
-    font-size: 16px;
-    margin: 5px 0;
-  }
+.placed-orders .box p {
+    font-size: 1rem;
+    margin-bottom: 0.8rem;
+    color: #555;
+}
 
-  .box span {
+.placed-orders .box p span {
     font-weight: bold;
-  }
+    color: #000;
+}
 
-  form {
-    margin-top: 10px;
-  }
+.placed-orders .products {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #f1f1f1;
+    border-radius: 8px;
+}
 
-  select {
-    padding: 5px;
-    margin-right: 5px;
-  }
+.placed-orders .product-item {
+    margin-bottom: 1rem;
+}
 
-  button {
-    padding: 5px 10px;
-    background: #1e88e5;
+.placed-orders .product-item p {
+    margin: 0.5rem 0;
+}
+
+.placed-orders form {
+    margin-top: 1rem;
+}
+
+.placed-orders form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.placed-orders form select {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.placed-orders form button {
+    background-color: #28a745;
     color: white;
+    padding: 0.6rem 1.2rem;
     border: none;
+    border-radius: 6px;
     cursor: pointer;
-  }
+    font-weight: bold;
+}
 
-  button:hover {
-    background: #1565c0;
-  }
+.placed-orders form button:hover {
+    background-color: #218838;
+}
 
-  .empty {
-    font-size: 18px;
-    color: #888;
-  }
+.placed-orders .error {
+    color: red;
+    text-align: center;
+    font-size: 1.2rem;
+}
+
+.placed-orders .empty {
+    text-align: center;
+    font-size: 1.5rem;
+    color: gray;
+}
+
+/* Styling for Cancel Order*

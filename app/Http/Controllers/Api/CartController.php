@@ -10,24 +10,30 @@ use App\Http\Resources\ProductResource;
 class CartController extends Controller
 {
     public function addToCart(Request $request)
-    {
-        $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'quantity' => 'required|integer|min:1',
-        ]);
+{
+    $request->validate([
+        'product_id' => 'required|exists:products,id',
+        'quantity' => 'required|integer|min:1',
+    ]);
 
-        $cartItem = CartItem::updateOrCreate(
-            [
-                'user_id' => Auth::id(),
-                'product_id' => $request->product_id,
-            ],
-            [
-                'quantity' => $request->quantity,
-            ]
-        );
+    // تحقق من وجود المنتج في السلة
+    $existingItem = CartItem::where('user_id', Auth::id())
+        ->where('product_id', $request->product_id)
+        ->first();
 
-        return response()->json(['message' => __('lang.added to cart'), 'cart' => $cartItem]);
+    if ($existingItem) {
+        return response()->json(['message' => 'Product already in cart'], 400);
     }
+
+    $cartItem = CartItem::create([
+        'user_id' => Auth::id(),
+        'product_id' => $request->product_id,
+        'quantity' => $request->quantity,
+    ]);
+
+    return response()->json(['message' => 'Product added to cart successfully!', 'cart' => $cartItem]);
+}
+
 
     /**
      * جلب محتويات السلة

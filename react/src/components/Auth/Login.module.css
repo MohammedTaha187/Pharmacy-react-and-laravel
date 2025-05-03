@@ -63,3 +63,21 @@ p a {
 p a:hover {
     text-decoration: underline;
 }
+
+.socialLogin {
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .google {
+    background-color: #db4437;
+    color: white;
+  }
+
+  .facebook {
+    background-color: #3b5998;
+    color: white;
+  }
+

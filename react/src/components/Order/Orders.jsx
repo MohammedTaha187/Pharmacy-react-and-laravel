@@ -1,16 +1,17 @@
 import { useState, useEffect } from "react";
-import axios from "../../axiosInstance"; 
-import "./orders.css"; // استيراد ملف التصميم
+import axios from "../../axiosInstance";
+import "./orders.css";
 
 const Orders = () => {
-  const [orders, setOrders] = useState([]); // البيانات ستكون فارغة في البداية
-  const [loading, setLoading] = useState(true); // حالة لتحميل البيانات
-  const [error, setError] = useState(null); // حالة للتعامل مع الأخطاء
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [ratings, setRatings] = useState({}); // <== هنا هنخزن كل Rating لكل أوردر
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const token = localStorage.getItem('token'); // تأكد من الحصول على التوكن من localStorage
+        const token = localStorage.getItem('token');
         if (!token) {
           setError('You are not authenticated.');
           setLoading(false);
@@ -19,48 +20,124 @@ const Orders = () => {
 
         const response = await axios.get("http://127.0.0.1:8000/api/orders", {
           headers: {
-            'Authorization': `Bearer ${token}` // إرسال التوكن مع الطلب
+            'Authorization': `Bearer ${token}`
           }
         });
-        setOrders(response.data); // تخزين البيانات في الـ state
+
+        console.log('Response:', response.data);
+
+        if (response.data && response.data.data) {
+          setOrders(response.data.data); // ✅ تصحيح هنا
+        } else {
+          setOrders([]);
+        }
+
       } catch (err) {
         setError('Error fetching orders');
-        console.error(err);
+        console.error(err.response?.data || err.message);
       } finally {
-        setLoading(false); // عند انتهاء تحميل البيانات
+        setLoading(false);
       }
     };
 
     fetchOrders();
-  }, []); // تأكد من تشغيله مرة واحدة عند تحميل الـ component
+  }, []);
+
+  const handleRatingChange = (orderId, value) => {
+    setRatings((prev) => ({
+      ...prev,
+      [orderId]: value
+    }));
+  };
+
+  const handleRatingSubmit = async (e, orderId) => {
+    e.preventDefault();
+    const token = localStorage.getItem('token');
+
+    try {
+      await axios.post(`http://127.0.0.1:8000/api/orders/${orderId}/rate`, {
+        rating: ratings[orderId],
+      }, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      alert("Rating submitted successfully!");
+
+    } catch (err) {
+      console.error(err.response?.data || err.message);
+      alert("Failed to submit rating.");
+    }
+  };
+
+  // Function to handle order cancellation (delete)
+  const handleCancelOrder = async (orderId) => {
+    const token = localStorage.getItem('token');
+
+    try {
+      const response = await axios.delete(`http://127.0.0.1:8000/api/orders/${orderId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.status === 200) {
+        // Update the state to remove the cancelled order
+        setOrders((prevOrders) => prevOrders.filter(order => order.id !== orderId));
+        alert("Order cancelled successfully!");
+      }
+    } catch (err) {
+      console.error(err.response?.data || err.message);
+      alert("Failed to cancel the order.");
+    }
+  };
 
   return (
     <section className="placed-orders">
       <h1 className="title">Placed Orders</h1>
       <div className="box-container">
         {loading ? (
-          <p>Loading...</p> // عرض رسالة التحميل
+          <p>Loading...</p>
         ) : error ? (
-          <p className="error">{error}</p> // عرض رسالة الخطأ إذا كانت موجودة
+          <p className="error">{error}</p>
         ) : orders.length > 0 ? (
           orders.map((order) => (
-            <div key={order.order_id} className="box">
+            <div key={order.id} className="box">
               <p>Ordered on: <span>{order.created_at}</span></p>
-              <p>Name: <span>{order.name}</span></p>
-              <p>Email: <span>{order.email}</span></p>
-              <p>Payment Method: <span>{order.pay_method}</span></p>
-              <p>Total Products: <span>{order.total_products}</span></p>
-              <p>Total Price: <span>${order.total_price}/-</span></p>
+              <p>Order Number: <span>{order.order_number}</span></p>
+              <p>Status: <span>{order.status}</span></p>
+              <p>Payment Method: <span>{order.payment_method}</span></p>
               <p>Payment Status:
-                <span style={{ color: order.payment_status === "pending" ? "red" : "green" }}>
+                <span style={{ color: order.payment_status === "unpaid" ? "red" : "green" }}>
                   {order.payment_status}
                 </span>
               </p>
 
+              <div className="products">
+                <h3>Products:</h3>
+                {order.products && order.products.length > 0 ? (
+                  order.products.map((product, index) => (
+                    <div key={index} className="product-item">
+                      <p>Product Name: <span>{JSON.parse(product.name).en}</span></p>
+                      <p>Quantity: <span>{product.quantity}</span></p>
+                      <p>Price: <span>${product.price}</span></p>
+                    </div>
+                  ))
+                ) : (
+                  <p>No products found.</p>
+                )}
+              </div>
+
               {/* Rating Form */}
-              <form>
-                <label htmlFor={`rating-${order.order_id}`}>Rate this order:</label>
-                <select id={`rating-${order.order_id}`} name="rating">
+              <form onSubmit={(e) => handleRatingSubmit(e, order.id)}>
+                <label htmlFor={`rating-${order.id}`}>Rate this order:</label>
+                <select
+                  id={`rating-${order.id}`}
+                  name="rating"
+                  value={ratings[order.id] || ''}
+                  onChange={(e) => handleRatingChange(order.id, e.target.value)}
+                >
+                  <option value="">Select Rating</option>
                   <option value="1">⭐ 1 Star</option>
                   <option value="2">⭐⭐ 2 Stars</option>
                   <option value="3">⭐⭐⭐ 3 Stars</option>
@@ -70,12 +147,18 @@ const Orders = () => {
                 <button type="submit">Submit Rating</button>
               </form>
 
-              {/* Display Rating */}
-              <p>Rating: <span>{order.rating ? `${order.rating} ⭐` : "Not Rated Yet"}</span></p>
+              {/* Show Rating if exists */}
+              <p>Rating: <span>{order.rating ? `${order.rating} Stars` : "Not Rated Yet"}</span></p>
+
+              {/* Cancel Order Button */}
+              <button onClick={() => handleCancelOrder(order.id)} className="cancel-btn">
+                Cancel Order
+              </button>
+
             </div>
           ))
         ) : (
-          <p className="empty">No orders placed yet!</p> // عرض رسالة إذا لم تكن هناك طلبات
+          <p className="empty">No orders placed yet!</p>
         )}
       </div>
     </section>

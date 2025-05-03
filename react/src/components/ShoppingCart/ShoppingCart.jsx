@@ -108,7 +108,8 @@ const ShoppingCart = () => {
         {cartItems.length > 0 ? (
           cartItems.map((item) => (
             <div key={item.cartItemId} className={styles.box}>
-              <Link to={`/product/${item.productId}`} className="fas fa-eye"></Link>
+             <Link to={`/quickView/${item.productId}`} className="fas fa-eye"></Link>
+
               <img src={item.image} alt={item.name} />
               <div className={styles.name}>{item.name}</div>
               <div className={styles.price}>{item.price} EGP</div>

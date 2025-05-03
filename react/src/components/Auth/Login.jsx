@@ -11,7 +11,7 @@ const Login = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) return; // مفيش توكن، خلاص كمل عادي
+    if (!token) return;
 
     const checkToken = async () => {
       try {
@@ -21,16 +21,15 @@ const Login = () => {
             Accept: "application/json",
           },
         });
-        navigate("/home"); // التوكن صحيح، دخله على الهوم
+        navigate("/home");
       } catch (error) {
         console.error("❌ Invalid token:", error);
-        localStorage.removeItem("token"); // لو التوكن بايظ، امسحه
+        localStorage.removeItem("token");
       }
     };
 
     checkToken();
   }, [navigate]);
-
 
   const initialValues = {
     email: "",
@@ -47,12 +46,7 @@ const Login = () => {
     try {
       const response = await axios.post("http://127.0.0.1:8000/api/login", values);
 
-      console.log("Login Successful:", response.data);
-
-      // حفظ التوكن في localStorage
       localStorage.setItem("token", response.data.token);
-
-      // إعادة تحميل الصفحة لضمان أن التوكن يعمل في جميع الطلبات
       window.location.href = "/home";
     } catch (err) {
       setError(err.response?.data?.message || "Login failed. Please try again.");
@@ -62,6 +56,28 @@ const Login = () => {
 
   return (
     <div className={styles.loginContainer}>
+      {/* ✅ أزرار تسجيل الدخول بالفيسبوك وجوجل */}
+      <div className={styles.socialLogin}>
+        <button
+          className={`${styles.btn} ${styles.google}`}
+          onClick={() => {
+            window.location.href = "http://127.0.0.1:8000/api/auth/google"; // تم تعديل الرابط هنا
+          }}
+        >
+          Login with Google
+        </button>
+
+        <button
+          className={`${styles.btn} ${styles.facebook}`}
+          onClick={() => {
+            window.location.href = "https://127.0.0.1:8000/api/auth/facebook/callback"; // تم تعديل الرابط هنا
+          }}
+        >
+          Login with Facebook
+        </button>
+      </div>
+
+      {/* ✅ نموذج تسجيل الدخول العادي */}
       <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
         {({ isSubmitting }) => (
           <Form className={styles.form}>

@@ -12,7 +12,7 @@ class TrustProxies extends Middleware
      *
      * @var array<int, string>|string|null
      */
-    protected $proxies;
+    protected $proxies = '*'; // تأكد من تعيين "*" لتوثيق جميع الـ proxies، إذا كنت تستخدم proxies مثل Cloudflare أو AWS، يمكنك تعديل هذا
 
     /**
      * The headers that should be used to detect proxies.

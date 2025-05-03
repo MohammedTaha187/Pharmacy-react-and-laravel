@@ -54,7 +54,6 @@ const Register = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      console.log("Registration Successful:", response.data);
       localStorage.setItem("token", response.data.token);
       window.location.href = "/home";
     } catch (err) {
@@ -67,6 +66,28 @@ const Register = () => {
 
   return (
     <div className={styles.registerContainer}>
+      {/* ✅ أزرار التسجيل بجوجل وفيسبوك */}
+      <div className={styles.socialLogin}>
+        <button
+          className={`${styles.btn} ${styles.google}`}
+          onClick={() => {
+            window.location.href = "http://127.0.0.1:8000/api/auth/google"; // ✅ صح كده
+          }}
+        >
+          Register with Google
+        </button>
+
+        <button
+          className={`${styles.btn} ${styles.facebook}`}
+          onClick={() => {
+            window.location.href = "https://127.0.0.1:8000/api/auth/facebook/callback"; // ✅ صح كده
+          }}
+        >
+          Register with Facebook
+        </button>
+      </div>
+
+      {/* ✅ نموذج التسجيل العادي */}
       <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
         {({ setFieldValue, isSubmitting }) => (
           <Form className={styles.form}>

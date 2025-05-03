@@ -1,18 +1,55 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import styles from "./UpdateProfile.module.css"; // 🔹 استيراد CSS module
+import axios from "../../axiosInstance";
+import styles from "./UpdateProfile.module.css";
 
 const UpdateProfile = () => {
   const [profile, setProfile] = useState({
-    name: "محمد أحمد",
-    email: "mohamed@example.com",
-    image: "/images/default-profile.png",
+    name: "",
+    email: "",
+    image: "",
     oldPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
 
   const [selectedImage, setSelectedImage] = useState(null);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        setError("التوكن غير موجود، الرجاء تسجيل الدخول.");
+        return;
+      }
+
+      try {
+        const response = await axios.get("http://127.0.0.1:8000/api/user", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const user = response.data.data;
+
+        setProfile({
+          name: user.name,
+          email: user.email,
+          image: user.image,
+          oldPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        setError("فشل في جلب البيانات، يرجى المحاولة لاحقًا.");
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const handleChange = (e) => {
     setProfile({ ...profile, [e.target.name]: e.target.value });
@@ -21,23 +58,69 @@ const UpdateProfile = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setSelectedImage(URL.createObjectURL(file));
+      setSelectedImage(file);
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert("تم تحديث الملف الشخصي بنجاح! 🚀");
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("التوكن غير موجود، الرجاء تسجيل الدخول.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("_method", "PUT"); // عشان Laravel يتعامل مع الطلب كأنه PUT
+    formData.append("name", profile.name);
+    formData.append("email", profile.email);
+    formData.append("oldPassword", profile.oldPassword);
+    formData.append("newPassword", profile.newPassword);
+    formData.append("newPassword_confirmation", profile.confirmPassword);
+
+    if (selectedImage) {
+      formData.append("image", selectedImage);
+    }
+
+    try {
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/user/update", // استخدم POST
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      alert("تم تحديث الملف الشخصي بنجاح!");
+      console.log(response.data);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      setError("فشل في تحديث البيانات، يرجى المحاولة لاحقًا.");
+    }
   };
+
+
+
 
   return (
     <section className={styles.updateProfile}>
       <h1 className={styles.title}>تحديث الملف الشخصي / Update Profile</h1>
 
+      {error && <div className={styles.error}>{error}</div>}
+
       <form onSubmit={handleSubmit} encType="multipart/form-data">
         <div className={styles.imageBox}>
           <img
-            src={selectedImage || profile.image}
+            src={
+              selectedImage
+                ? URL.createObjectURL(selectedImage)
+                : profile.image
+                ? `http://127.0.0.1:8000/storage/${profile.image}`
+                : "/images/default-profile.png"
+            }
             alt="صورة المستخدم"
             className={styles.profileImage}
           />
@@ -45,74 +128,69 @@ const UpdateProfile = () => {
 
         <div className={styles.flex}>
           <div className={styles.inputBox}>
-            <span>اسم المستخدم / Username:</span>
+            <span>اسم المستخدم:</span>
             <input
               type="text"
               name="name"
               value={profile.name}
               onChange={handleChange}
-              placeholder="أدخل اسم المستخدم الجديد / Enter new username"
               required
               className={styles.box}
             />
 
-            <span>البريد الإلكتروني / Email:</span>
+            <span>البريد الإلكتروني:</span>
             <input
               type="email"
               name="email"
               value={profile.email}
               onChange={handleChange}
-              placeholder="أدخل البريد الإلكتروني الجديد / Enter new email"
               required
               className={styles.box}
             />
 
-            <span>تحديث الصورة / Update Image:</span>
+            <span>تحديث الصورة:</span>
             <input
               type="file"
               name="image"
-              accept="image/jpg, image/jpeg, image/png"
-              className={styles.box}
+              accept="image/*"
               onChange={handleImageChange}
+              className={styles.box}
             />
           </div>
 
           <div className={styles.inputBox}>
-            <span>كلمة المرور القديمة / Old Password:</span>
+            <span>كلمة المرور القديمة:</span>
             <input
               type="password"
               name="oldPassword"
               value={profile.oldPassword}
               onChange={handleChange}
-              placeholder="أدخل كلمة المرور القديمة / Enter old password"
               className={styles.box}
             />
 
-            <span>كلمة المرور الجديدة / New Password:</span>
+            <span>كلمة المرور الجديدة:</span>
             <input
               type="password"
               name="newPassword"
               value={profile.newPassword}
               onChange={handleChange}
-              placeholder="أدخل كلمة المرور الجديدة / Enter new password"
               className={styles.box}
             />
 
-            <span>تأكيد كلمة المرور / Confirm Password:</span>
+            <span>تأكيد كلمة المرور:</span>
             <input
               type="password"
               name="confirmPassword"
               value={profile.confirmPassword}
               onChange={handleChange}
-              placeholder="أدخل تأكيد كلمة المرور / Confirm new password"
               className={styles.box}
             />
           </div>
         </div>
 
         <div className={styles.flexBtn}>
-          <input type="submit" className={styles.btn} value="تحديث الملف الشخصي / Update Profile" />
-          <Link to="/" className={styles.optionBtn}>العودة إلى الصفحة الرئيسية / Back to Home</Link>
+          <input type="submit" value="تحديث الملف الشخصي" className={styles.btn} />
+          <Link to="/" className={styles.optionBtn}>العودة للرئيسية</Link>
         </div>
       </form>
     </section>

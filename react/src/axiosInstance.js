@@ -8,18 +8,18 @@ const instance = axios.create({
 
 // Interceptor لتعديل الطلب قبل الإرسال
 instance.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    (config) => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      config.headers.Accept = "application/json";
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
     }
-    config.headers.Accept = "application/json";
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+  );
 
 // Interceptor لمعالجة الردود
 instance.interceptors.response.use(

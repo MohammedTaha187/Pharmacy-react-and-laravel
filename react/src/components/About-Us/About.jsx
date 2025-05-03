@@ -33,7 +33,7 @@ const About = () => {
               A wide range of medicines, medical supplies, skincare, and body
               care, along with expert health consultations.
             </p>
-            <Link to="/shop" className="btn">
+            <Link to="/Medications" className="btn">
               Shop Now
             </Link>
           </div>

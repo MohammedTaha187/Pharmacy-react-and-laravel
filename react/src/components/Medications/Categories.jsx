@@ -1,60 +1,90 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import axios from "../../axiosInstance"; 
-import "./Categories.css";
+import axios from "../../axiosInstance";
+import { Link } from "react-router-dom";  // 🔥
+import { PuffLoader } from "react-spinners"; // 🔥
+import "bootstrap/dist/css/bootstrap.min.css";
 
-const Categories = () => {
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+export default function Products() {
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await axios.get("http://127.0.0.1:8000/api/categories");
-        console.log("API Response:", response.data);
-        setCategories(response.data.data); // تحديث الفئات بالبيانات المستلمة
-      } catch (err) {
-        console.error("Error fetching categories:", err);
-        setError("Failed to load categories.");
-      } finally {
-        setLoading(false);
-      }
-    };
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                if (!token) {
+                    setError("🚫 Please login first.");
+                    setLoading(false);
+                    return;
+                }
 
-    fetchCategories();
-  }, []);
+                const response = await axios.get("http://127.0.0.1:8000/api/products", {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        Accept: "application/json",
+                    },
+                });
 
-  return (
-    <section className="categories">
-      <h2 className="categories-title">Categories</h2>
+                setProducts(response.data.data);
+            } catch (err) {
+                console.error("❌ Error fetching products:", err);
+                setError("❌ Failed to load products.");
+            } finally {
+                setLoading(false);
+            }
+        };
 
-      {/* عرض رسالة التحميل */}
-      {loading && <p className="text-primary">Loading categories...</p>}
+        fetchProducts();
+    }, []);
 
-      {/* عرض رسالة الخطأ إن وجدت */}
-      {error && <p className="text-danger">{error}</p>}
+    return (
+        <div className="container py-5">
+            {/* العنوان في النص */}
+            <h1 className="mb-4 text-primary text-center">All Products</h1>
 
-      {/* عرض الفئات عند جلب البيانات بنجاح */}
-      {!loading && !error && (
-        <div className="categories-container">
-          {categories.length > 0 ? (
-            categories.map((category) => (
-              <Link
-                key={category.id}
-                to={`/category/${category.slug ?? category.id}`} // استخدام slug إذا كان متوفرًا
-                className="category-box"
-              >
-                {category.name?.en ?? "Unnamed Category"}
-              </Link>
-            ))
-          ) : (
-            <p className="text-muted">No categories available.</p>
-          )}
+            {/* تحميل - Spinner */}
+            {loading && (
+                <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "300px" }}>
+                    <PuffLoader color="#0d6efd" size={80} />
+                </div>
+            )}
+
+            {/* عرض الأخطاء */}
+            {error && !loading && <p className="text-danger text-center">{error}</p>}
+
+            {/* عرض المنتجات */}
+            {!loading && !error && (
+                <div className="row">
+                    {products.length > 0 ? (
+                        products.map((product) => (
+                            <div key={product.id} className="col-md-4 col-sm-6 mb-4">
+                                <div className="card h-100 shadow-sm">
+                                    <img
+                                        src={product.image || "/images/placeholder.png"}
+                                        alt={product.name?.en || "Product"}
+                                        className="card-img-top"
+                                        style={{ height: "200px", objectFit: "cover" }}
+                                        onError={(e) => (e.target.src = "/images/placeholder.png")}
+                                    />
+                                    <div className="card-body text-center d-flex flex-column">
+                                        <h5 className="card-title">{product.name?.en || "Unnamed Product"}</h5>
+                                        <p className="card-text fw-bold">Price: {product.price} EGP</p>
+
+                                        {/* هنا رابط View Details */}
+                                        <Link to={`/quickView/${product.id}`} className="btn btn-primary mt-auto">
+                                            View Details
+                                        </Link>
+
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <p className="text-muted text-center">🚫 No products available.</p>
+                    )}
+                </div>
+            )}
         </div>
-      )}
-    </section>
-  );
-};
-
-export default Categories;
+    );
+}

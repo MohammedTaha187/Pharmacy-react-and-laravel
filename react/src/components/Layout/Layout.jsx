@@ -1,20 +1,26 @@
-import React from 'react'
-import { Outlet } from 'react-router-dom'
-import Header from '../Header/Header'
-import Footer from '../Footer/Footer'
-
+import React from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
+import Header from '../Header/Header';
+import Footer from '../Footer/Footer';
 
 function Layout() {
-  return <>
+  const token = localStorage.getItem("token");
+  const location = useLocation();
 
+ 
+  const noAuthPages = ["/login", "/register"];
 
-<Header/>
+  const shouldShowLayout = token && !noAuthPages.includes(location.pathname);
 
-<Outlet/>
-<Footer/>
+  return (
+    <>
+      {shouldShowLayout && <Header />}
 
-  </>
+      <Outlet />
+
+      {shouldShowLayout && <Footer />}
+    </>
+  );
 }
 
-export default Layout
-
+export default Layout;

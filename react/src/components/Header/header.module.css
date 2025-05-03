@@ -1,0 +1,125 @@
+/* الحاوية الرئيسية */
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* الشريط العلوي */
+  header {
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 15px 0;
+    border-bottom: 1px solid #ddd;
+  }
+
+  /* الروابط في التنقل */
+  nav .nav-link {
+    text-decoration: none;
+    color: #333;
+    margin-right: 15px;
+    font-weight: 500;
+    font-size: 16px;
+  }
+
+  nav .nav-link:hover {
+    color: #007bff;
+  }
+
+  /* زر أيقونة المستخدم */
+  .profile-button {
+    background-color: transparent;
+    border: 2px solid #007bff;
+    border-radius: 50%;
+    padding: 8px;
+    cursor: pointer;
+  }
+
+  .profile-button:hover {
+    background-color: #007bff;
+    color: white;
+  }
+
+  /* القائمة المنسدلة */
+  .profile {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    width: 200px;
+    z-index: 9999;
+    display: block;
+  }
+
+  .profile img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-bottom: 10px;
+  }
+
+  .profile .fw-bold {
+    font-weight: 700;
+  }
+
+  .profile button,
+  .profile a {
+    display: block;
+    width: 100%;
+    padding: 8px;
+    margin-top: 8px;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .profile button {
+    background-color: #dc3545;
+    border: none;
+    color: white;
+  }
+
+  .profile button:hover {
+    background-color: #c82333;
+  }
+
+  .profile a {
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+  }
+
+  .profile a:hover {
+    background-color: #0056b3;
+  }
+
+  /* شارة السلة */
+  .badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translate(50%, -50%);
+    background-color: #dc3545;
+    color: white;
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 50%;
+  }
+
+  /* قائمة التنقل */
+  .nav-link {
+    font-size: 16px;
+    color: #333;
+  }
+
+  .nav-link:hover {
+    color: #007bff;
+  }

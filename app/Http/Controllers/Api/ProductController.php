@@ -152,4 +152,35 @@ class ProductController extends Controller
         $product->delete();
         return response()->json(['message' => __('lang.product deleted successfully')], 200);
     }
+
+    public function search(Request $request)
+{
+    $query = $request->input('query');  // الحصول على مصطلح البحث من الطلب
+
+    if (!$query) {
+        return response()->json(['error' => 'No search query provided'], 400);
+    }
+
+    // البحث باستخدام LIKE على الاسم والوصف
+    $products = Product::where('name->en', 'like', '%' . $query . '%')
+                        ->orWhere('name->ar', 'like', '%' . $query . '%')
+                        ->orWhere('desc->en', 'like', '%' . $query . '%')
+                        ->orWhere('desc->ar', 'like', '%' . $query . '%')
+                        ->get();
+
+    // إذا لم يتم العثور على أي منتج
+    if ($products->isEmpty()) {
+        return response()->json(['message' => 'No products found'], 404);
+    }
+
+    // إرجاع النتائج
+    $products = $products->map(function ($prod) {
+        $prod->name = json_decode($prod->name);
+        $prod->desc = json_decode($prod->desc);
+        return $prod;
+    });
+
+    return ProductResource::collection($products);
+}
+
 }

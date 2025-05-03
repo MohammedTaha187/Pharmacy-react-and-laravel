@@ -1,0 +1,65 @@
+version: '3'
+
+services:
+  app:
+    image: laravelsail/php81-composer
+    container_name: pharmacy_app
+    ports:
+      - "8899:80"   # تم تغيير البورت من 8082 إلى 8085
+    environment:
+      - SERVICE_NAME=php
+      - SERVICE_TAG=8.1
+    volumes:
+      - '.:/var/www/html'
+    networks:
+      - sail
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  mysql:
+    image: 'mysql:8.0'
+    container_name: pharmacy_mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: pharmacy
+      MYSQL_USER: sail
+      MYSQL_PASSWORD: password
+    volumes:
+      - 'mysql:/var/lib/mysql'
+    networks:
+      - sail
+
+  redis:
+    image: 'redis:alpine'
+    container_name: pharmacy_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - sail
+
+  nginx:
+    image: nginx:alpine
+    container_name: pharmacy_nginx
+    ports:
+      - "8899:80"   # تم التغيير من 8082 إلى 8085
+      - "8443:443"  # تم التغيير من 444 إلى 8443
+    volumes:
+      - ~/.docker/ssl:/etc/ssl/private
+      - '.:/var/www/html'
+    environment:
+      - VIRTUAL_HOST=localhost
+      - VIRTUAL_PORT=80
+      - HTTPS=true
+    networks:
+      - sail
+
+networks:
+  sail:
+    driver: bridge
+
+volumes:
+  mysql:
+    driver: local
+

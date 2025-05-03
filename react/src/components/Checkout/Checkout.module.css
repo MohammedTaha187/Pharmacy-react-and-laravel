@@ -1,0 +1,108 @@
+/* Checkout.module.css */
+
+.checkoutPage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f4f4f9;
+    padding: 20px;
+  }
+
+  .container {
+    max-width: 800px;
+    width: 100%;
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .checkoutPage h2 {
+    text-align: center;
+    font-size: 2rem;
+    color: #2c3e50;
+    margin-bottom: 20px;
+  }
+
+  .cartItems {
+    background-color: #fff;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+  }
+
+  .cartItems p {
+    font-size: 1rem;
+    margin: 10px 0;
+    color: #7f8c8d;
+  }
+
+  .total {
+    text-align: center;
+    font-size: 1.5rem;
+    color: #e74c3c;
+    font-weight: bold;
+    margin: 20px 0;
+  }
+
+  .checkoutForm {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .checkoutForm .formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .checkoutForm label {
+    font-size: 1rem;
+    color: #333;
+  }
+
+  .checkoutForm input,
+  .checkoutForm select {
+    padding: 12px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
+
+  .checkoutForm input:focus,
+  .checkoutForm select:focus {
+    border-color: #f39c12;
+  }
+
+  .checkoutForm button {
+    padding: 12px;
+    background-color: #27ae60;
+    color: white;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
+  }
+
+  .checkoutForm button:hover {
+    background-color: #2ecc71;
+  }
+
+  .paypalButton {
+    margin-top: 30px;
+    text-align: center;
+    display: block;
+  }
+
+  @media (max-width: 768px) {
+    .container {
+      padding: 20px;
+    }
+  }

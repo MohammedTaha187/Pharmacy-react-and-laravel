@@ -10,6 +10,10 @@ import UpdateProfile from './components/UpdateProfile/UpdateProfile';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
 import Products from './components/Producys/Products';
+import QuickView from './components/QuickView/QuickView';
+import Checkout from './components/Checkout/Checkout';
+import SocialAuth from './SocialAuth';
+
 
 
 const routes = createBrowserRouter([
@@ -26,6 +30,10 @@ const routes = createBrowserRouter([
             {path: "profile" , element:<UpdateProfile/>},
             {path: "login" , element:<Login/>},
             {path: "register" , element:<Register/>},
+            { path: "quickView/:productId", element: <QuickView /> },
+            {path: "checkout" , element:<Checkout/>},
+            { path: "social-auth", element: <SocialAuth /> },
+
         ]
     }
 ]);

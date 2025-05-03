@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash; // إضافة Hash للتأكد من كلمة المرور القديمة
 use Laravel\Socialite\Facades\Socialite;
 
 class UserController extends Controller
@@ -17,23 +18,21 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // دعم رفع الصورة
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-
 
         $imagePath = null;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '_' . $image->getClientOriginalName();
-            $image->move(public_path('uploads/profile_images'), $imageName);
-            $imagePath = 'uploads/profile_images/' . $imageName;
+            $imagePath = $image->storeAs('profile_images', $imageName, 'public');
         }
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
-            'image' => $imagePath,
+            'image' => $imagePath, // حفظ مسار الصورة
         ]);
 
         return response()->json([
@@ -42,7 +41,6 @@ class UserController extends Controller
             'user' => new UserResource($user),
         ], 201);
     }
-
 
     public function login(Request $request)
     {
@@ -84,4 +82,60 @@ class UserController extends Controller
         $users = User::all();
         return UserResource::collection($users);
     }
+
+    public function update(Request $request)
+    {
+        try {
+            $user = Auth::user();
+
+            // التحقق من المدخلات
+            $request->validate([
+                'name' => 'string|max:255',
+                'email' => 'string|email|unique:users,email,' . $user->id,
+                'oldPassword' => 'string|min:8',
+                'newPassword' => 'nullable|string|min:8|confirmed',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            ]);
+
+            // التحقق من كلمة المرور القديمة
+            if (!Hash::check($request->oldPassword, $user->password)) {
+                return response()->json(['message' => 'كلمة المرور القديمة غير صحيحة'], 400);
+            }
+
+            // تغيير كلمة المرور الجديدة إذا كانت موجودة
+            if ($request->newPassword) {
+                $user->password = bcrypt($request->newPassword);
+            }
+
+            // رفع الصورة الجديدة إن وجدت
+            if ($request->hasFile('image')) {
+                // حذف الصورة القديمة إن وُجدت
+                if ($user->image && \Storage::disk('public')->exists($user->image)) {
+                    \Storage::disk('public')->delete($user->image);
+                }
+
+                $image = $request->file('image');
+                $imageName = time() . '_' . $image->getClientOriginalName();
+                $imagePath = $image->storeAs('profile_images', $imageName, 'public');
+                $user->image = $imagePath;
+            }
+
+            // تحديث البيانات الأخرى
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->save();
+
+            return response()->json([
+                'message' => 'تم تحديث الملف الشخصي بنجاح',
+                'user' => new UserResource($user),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'حدث خطأ أثناء تحديث الملف الشخصي.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
 }
