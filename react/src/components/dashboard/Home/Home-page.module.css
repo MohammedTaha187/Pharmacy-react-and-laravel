@@ -1,0 +1,61 @@
+.dashboard {
+  padding: 2rem;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.title {
+  text-align: center;
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: #343a40;
+  margin-bottom: 2rem;
+}
+
+.boxContainer {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+.box {
+  background: linear-gradient(to bottom right, #343a40, #495057);
+  color: #fff;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.box::before {
+  content: "";
+  position: absolute;
+  width: 120%;
+  height: 120%;
+  top: -10%;
+  left: -10%;
+  background: rgba(255, 255, 255, 0.05);
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+
+.box:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+}
+
+.box h3 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: #ffc107;
+}
+
+.box p {
+  text-transform: capitalize;
+  font-size: 1rem;
+  color: #dee2e6;
+  margin-bottom: 1rem;
+}

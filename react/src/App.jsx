@@ -13,29 +13,39 @@ import Products from './components/Producys/Products';
 import QuickView from './components/QuickView/QuickView';
 import Checkout from './components/Checkout/Checkout';
 import SocialAuth from './SocialAuth';
-
-
+import AdminLayout from './components/dashboard/Layout/AdminLayout';
+import AdminHome from './components/dashboard/Home/AdminHome';
+import AdminProduct from './components/dashboard/Product/AdminProduct';
 
 const routes = createBrowserRouter([
-    {
-        path: '/', element: <Layout/>, children: [
-            { path: "", element: <Login /> },
-            { path: "home", element: <Home /> },
-            {path: "Medications" , element : <Categories />},
-            {path: "products" , element : <Products/>},
-            {path: "orders" , element : <Orders />},
-            {path: "about" , element : <About />},
-            {path: "contact" , element:<Contact/>},
-            {path: "cart" , element:<ShoppingCart/>},
-            {path: "profile" , element:<UpdateProfile/>},
-            {path: "login" , element:<Login/>},
-            {path: "register" , element:<Register/>},
-            { path: "quickView/:productId", element: <QuickView /> },
-            {path: "checkout" , element:<Checkout/>},
-            { path: "social-auth", element: <SocialAuth /> },
-
-        ]
-    }
+  {
+    path: "/",
+    element: <Layout />,
+    children: [
+      { path: "", element: <Login /> },
+      { path: "home", element: <Home /> },
+      { path: "Medications", element: <Categories /> },
+      { path: "products", element: <Products /> },
+      { path: "orders", element: <Orders /> },
+      { path: "about", element: <About /> },
+      { path: "contact", element: <Contact /> },
+      { path: "cart", element: <ShoppingCart /> },
+      { path: "profile", element: <UpdateProfile /> },
+      { path: "login", element: <Login /> },
+      { path: "register", element: <Register /> },
+      { path: "quickView/:productId", element: <QuickView /> },
+      { path: "checkout", element: <Checkout /> },
+      { path: "social-auth", element: <SocialAuth /> },
+    ],
+  },
+  {
+    path: "/admin",
+    element: <AdminLayout />,
+    children: [
+      { path: "", element: <AdminHome /> },
+      { path: "products", element: <AdminProduct /> },
+    ],
+  },
 ]);
 
 function App() {

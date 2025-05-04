@@ -17,18 +17,22 @@ const Checkout = () => {
 
   useEffect(() => {
     const fetchCartItems = async () => {
-      const token = localStorage.getItem('token');
-      if (!token) return;
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
 
-      const response = await axios.get('/api/cart', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: 'application/json',
-        },
-      });
+        const response = await axios.get('/api/cart', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
+          },
+        });
 
-      const items = response.data.cart || [];
-      setCartItems(items);
+        const items = response.data.cart || [];
+        setCartItems(items);
+      } catch (error) {
+        console.error('Error fetching cart items:', error);
+      }
     };
 
     fetchCartItems();
@@ -36,133 +40,100 @@ const Checkout = () => {
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const paymentStatus = urlParams.get('status');
-    const hasSubmitted = sessionStorage.getItem('order_submitted');
+    const paymentStatus = urlParams.get('payment');
 
-    if (paymentStatus === 'success' && !hasSubmitted) {
-      sessionStorage.setItem('order_submitted', 'true');
-      toast.success('تم الدفع بنجاح عبر PayPal 🎉');
-      setCartItems([]);
-      sessionStorage.removeItem('checkout_address');
-      setTimeout(() => {
-        navigate('/orders');
-      }, 1500);
-    } else if (paymentStatus === 'cancelled') {
-      toast.error('تم إلغاء الدفع عبر PayPal');
-    } else if (paymentStatus === 'unauthorized') {
-      toast.error('لم يتم التعرف على المستخدم');
-    } else if (paymentStatus === 'empty_cart') {
-      toast.error('السلة فارغة');
-    } else if (paymentStatus === 'missing_address') {
-      toast.error('لم يتم إرسال العنوان إلى PayPal');
+    if (paymentStatus === 'paypal_success') {
+      handleOrderSubmit(null, 'paid');
+    } else if (paymentStatus === 'paypal_error') {
+      toast.error('فشل الدفع عبر PayPal');
     }
   }, []);
 
-  const handleOrderSubmit = async (event) => {
+  const handleOrderSubmit = async (event, paymentStatusFromPayPal = null) => {
     if (event) event.preventDefault();
 
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/login');
-      return;
-    }
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
 
-    if (!address.flat || !address.city || !address.country) {
-      toast.error('يرجى إدخال العنوان بالكامل');
-      return;
-    }
+      const formattedAddress = `${address.flat}, ${address.city}, ${address.country}`;
+      if (!formattedAddress || !address.city || !address.country || !address.flat) {
+        return;
+      }
 
-    const formattedAddress = `${address.flat}, ${address.city}, ${address.country}`;
-    if (cartItems.length === 0) return;
+      if (cartItems.length === 0) {
+        return;
+      }
 
-    const orderData = {
-      order_number: `ORD-${Date.now()}`,
-      address: formattedAddress,
-      delivery_address: formattedAddress,
-      payment_method: paymentMethod,
-      payment_status: 'unpaid',
-      status: 'pending',
-      items: cartItems.map((item) => ({
-        product_id: item.product.id,
-        quantity: item.quantity,
-      })),
-    };
+      let paymentStatus = 'unpaid';
 
-    const response = await axios.post('/api/orders', orderData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/json',
-      },
-    });
+      if (paymentStatusFromPayPal) {
+        paymentStatus = paymentStatusFromPayPal;
+      }
 
-    if (response && response.data) {
-      await axios.post('/api/cart/clear', {}, {
+      const orderData = {
+        order_number: `ORD-${Date.now()}`,
+        address: formattedAddress,
+        delivery_address: formattedAddress,
+        payment_method: paymentMethod,
+        payment_status: paymentStatus,
+        status: 'pending',
+        items: cartItems.map((item) => ({
+          product_id: item.product.id,
+          quantity: item.quantity,
+        })),
+      };
+
+      const response = await axios.post('/api/orders', orderData, {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: 'application/json',
         },
       });
 
-      setCartItems([]);
-      sessionStorage.removeItem('order_submitted');
+      if (response && response.data) {
+        await axios.post('/cart/clear', {}, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
+          },
+        });
 
-      toast.success('تم إنشاء الطلب بنجاح 🎉', {
-        duration: 4000,
-        style: {
-          border: '1px solid #4CAF50',
-          padding: '16px',
-          color: '#4CAF50',
-          background: '#f0fff0',
-        },
-        iconTheme: {
-          primary: '#4CAF50',
-          secondary: '#fff',
-        },
-      });
-
-      setTimeout(() => {
+        setCartItems([]);
         navigate('/orders');
-      }, 1500);
+      }
+    } catch (error) {
+      console.error('Order submission failed:', error.response?.data?.errors || error.message);
     }
   };
 
   const handlePayWithPaypal = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      toast.error('يرجى تسجيل الدخول أولاً');
-      navigate('/login');
-      return;
-    }
-  
-    if (!address.flat || !address.city || !address.country) {
-      toast.error('يرجى إدخال العنوان بالكامل قبل الدفع');
-      return;
-    }
-  
-    sessionStorage.setItem('checkout_address', JSON.stringify(address));
-  
     try {
-      const formattedAddress = `${address.flat}, ${address.city}, ${address.country}`;
-  
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.error('يرجى تسجيل الدخول أولاً');
+        navigate('/login');
+        return;
+      }
+
       const res = await axios.get('/api/paypal/payment', {
         headers: {
           Authorization: `Bearer ${token}`,
-          Accept: 'application/json',
         },
-        params: {
-          address: formattedAddress,
-        },
+        validateStatus: (status) => status >= 200 && status < 400,
       });
-  
-      const approvalUrl = res.data.approval_url;
-      if (approvalUrl) {
-        window.location.href = approvalUrl;
+
+      if (res.status === 302 && res.headers.location) {
+        window.location.href = res.headers.location;
       } else {
-        toast.error('لم يتم الحصول على رابط الدفع من PayPal');
+        toast.error('فشل بدء عملية الدفع');
       }
     } catch (error) {
-      console.error(error);
-      toast.error('حدث خطأ أثناء معالجة الدفع');
+      if (error.response && error.response.status === 302 && error.response.headers.location) {
+        window.location.href = error.response.headers.location;
+      } else {
+        toast.error('حدث خطأ أثناء الاتصال بـ PayPal');
+      }
     }
   };
 
@@ -171,7 +142,10 @@ const Checkout = () => {
       <div className={styles.container}>
         <h2>إتمام الطلب</h2>
 
-        <form onSubmit={(e) => handleOrderSubmit(e)} className={styles.checkoutForm}>
+        <form
+          onSubmit={(e) => handleOrderSubmit(e)}
+          className={styles.checkoutForm}
+        >
           <div className={styles.formGroup}>
             <label>طريقة الدفع</label>
             <select
@@ -180,8 +154,8 @@ const Checkout = () => {
               required
             >
               <option value="">اختار طريقة الدفع</option>
-              <option value="paypal">PayPal</option>
               <option value="cash_on_delivery">الدفع عند الاستلام</option>
+              <option value="paypal">PayPal</option>
             </select>
           </div>
 
@@ -189,48 +163,54 @@ const Checkout = () => {
             <label>العنوان</label>
             <input
               type="text"
-              name="flat"
-              placeholder="رقم الشقة"
+              placeholder="مثال: 123 Main Street, New York"
               value={address.flat}
               onChange={(e) =>
-                setAddress((prev) => ({ ...prev, flat: e.target.value }))
-              }
-              required
-            />
-            <input
-              type="text"
-              name="city"
-              placeholder="المدينة"
-              value={address.city}
-              onChange={(e) =>
-                setAddress((prev) => ({ ...prev, city: e.target.value }))
-              }
-              required
-            />
-            <input
-              type="text"
-              name="country"
-              placeholder="الدولة"
-              value={address.country}
-              onChange={(e) =>
-                setAddress((prev) => ({ ...prev, country: e.target.value }))
+                setAddress({ ...address, flat: e.target.value })
               }
               required
             />
           </div>
 
-          {paymentMethod === 'paypal' ? (
-            <div>
-              <button type="button" onClick={handlePayWithPaypal}>
-                الدفع عبر PayPal
-              </button>
-            </div>
-          ) : (
-            <div>
-              <button type="submit">تأكيد الطلب</button>
-            </div>
+          <div className={styles.formGroup}>
+            <input
+              type="text"
+              placeholder="المدينة"
+              value={address.city}
+              onChange={(e) =>
+                setAddress({ ...address, city: e.target.value })
+              }
+              required
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <input
+              type="text"
+              placeholder="الدولة"
+              value={address.country}
+              onChange={(e) =>
+                setAddress({
+                  ...address,
+                  country: e.target.value,
+                })
+              }
+              required
+            />
+          </div>
+
+          {paymentMethod !== 'paypal' && (
+            <button type="submit" className={styles.btn}>
+              إتمام الطلب
+            </button>
           )}
         </form>
+
+        {paymentMethod === 'paypal' && (
+          <button onClick={handlePayWithPaypal} className={styles.btn}>
+            الدفع عبر PayPal
+          </button>
+        )}
       </div>
     </div>
   );

@@ -35,6 +35,7 @@ class UserController extends Controller
             'password' => bcrypt($request->password),
             'image' => $imagePath, // حفظ مسار الصورة
         ]);
+        $user->assignRole('user');
 
         return response()->json([
             'message' => 'User created successfully',

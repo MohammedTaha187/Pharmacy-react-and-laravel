@@ -42,7 +42,7 @@ const UpdateProfile = () => {
           newPassword: "",
           confirmPassword: "",
         });
-      } catch {
+      } catch (error) {
         setError("فشل في جلب البيانات، يرجى المحاولة لاحقًا.");
       }
     };
@@ -63,35 +63,27 @@ const UpdateProfile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     const token = localStorage.getItem("token");
     if (!token) {
       alert("التوكن غير موجود، الرجاء تسجيل الدخول.");
       return;
     }
-  
-    // التحقق إذا كان المستخدم قد سجل عبر جوجل أو فيسبوك
-    const isSocialLogin = !profile.oldPassword; // إذا كانت كلمة المرور القديمة فارغة، نعتبر أن التسجيل كان عبر حساب اجتماعي
-  
+
     const formData = new FormData();
     formData.append("_method", "PUT");
     formData.append("name", profile.name);
     formData.append("email", profile.email);
-  
-    // إذا كان المستخدم قد سجل عبر جوجل أو فيسبوك، لا نحتاج كلمة المرور القديمة
-    if (!isSocialLogin) {
-      formData.append("oldPassword", profile.oldPassword);
-    }
-  
+    formData.append("oldPassword", profile.oldPassword);
     formData.append("newPassword", profile.newPassword);
     formData.append("newPassword_confirmation", profile.confirmPassword);
-  
+
     if (selectedImage) {
       formData.append("image", selectedImage);
     }
-  
+
     try {
-      await axios.post(
+      const response = await axios.post(
         "/api/user/update",
         formData,
         {
@@ -102,11 +94,10 @@ const UpdateProfile = () => {
         }
       );
       alert("تم تحديث الملف الشخصي بنجاح!");
-    } catch {
+    } catch (error) {
       setError("فشل في تحديث البيانات، يرجى المحاولة لاحقًا.");
     }
   };
-  
 
   return (
     <section className={styles.updateProfile}>
@@ -121,7 +112,7 @@ const UpdateProfile = () => {
               selectedImage
                 ? URL.createObjectURL(selectedImage)
                 : profile.image
-                ? `http://127.0.0.1:8000/storage/${profile.image}`
+                ? `/storage/${profile.image}`
                 : "/images/default-profile.png"
             }
             alt="صورة المستخدم"

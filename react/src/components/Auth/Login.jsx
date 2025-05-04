@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import axios from "axios";
+import axios from "../../axiosInstance";
 import styles from "./Login.module.css";
 
 const Login = () => {
@@ -15,15 +15,21 @@ const Login = () => {
 
     const checkToken = async () => {
       try {
-        await axios.get("http://127.0.0.1:8000/api/user", {
+        const response = await axios.get("/api/user", {
           headers: {
             Authorization: `Bearer ${token}`,
             Accept: "application/json",
           },
         });
-        navigate("/home");
+
+        const role = response.data.data.role;
+
+        if (role === "admin" || role === "super_admin") {
+          navigate("/admin");
+        } else {
+          navigate("/home");
+        }
       } catch (error) {
-        console.error("❌ Invalid token:", error);
         localStorage.removeItem("token");
       }
     };
@@ -44,10 +50,25 @@ const Login = () => {
   const handleSubmit = async (values, { setSubmitting }) => {
     setError("");
     try {
-      const response = await axios.post("http://127.0.0.1:8000/api/login", values);
-
+      const response = await axios.post("/api/login", values);
       localStorage.setItem("token", response.data.token);
-      window.location.href = "/home";
+
+      const userResponse = await axios.get("/api/user", {
+        headers: {
+          Authorization: `Bearer ${response.data.token}`,
+          Accept: "application/json",
+        },
+      });
+
+      const role = userResponse.data.data.role;
+      console.log("User Role:", role);
+
+      if (role === "admin" || role === "super_admin") {
+        navigate("/admin");
+      } else {
+        navigate("/home");
+      }
+
     } catch (err) {
       setError(err.response?.data?.message || "Login failed. Please try again.");
     }
@@ -56,12 +77,11 @@ const Login = () => {
 
   return (
     <div className={styles.loginContainer}>
-      {/* ✅ أزرار تسجيل الدخول بالفيسبوك وجوجل */}
       <div className={styles.socialLogin}>
         <button
           className={`${styles.btn} ${styles.google}`}
           onClick={() => {
-            window.location.href = "http://127.0.0.1:8000/api/auth/google"; // تم تعديل الرابط هنا
+            window.location.href = "/api/auth/google";
           }}
         >
           Login with Google
@@ -70,14 +90,13 @@ const Login = () => {
         <button
           className={`${styles.btn} ${styles.facebook}`}
           onClick={() => {
-            window.location.href = "https://127.0.0.1:8000/api/auth/facebook/callback"; // تم تعديل الرابط هنا
+            window.location.href = "https://127.0.0.1:8000/api/auth/facebook/callback";
           }}
         >
           Login with Facebook
         </button>
       </div>
 
-      {/* ✅ نموذج تسجيل الدخول العادي */}
       <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
         {({ isSubmitting }) => (
           <Form className={styles.form}>
