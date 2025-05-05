@@ -18,6 +18,7 @@ import AdminHome from './components/dashboard/Home/AdminHome';
 import AdminProduct from './components/dashboard/Product/AdminProduct';
 import AdminOrder from './components/dashboard/Orders/AdminOrders';
 import AdminUsers from './components/dashboard/User/AdminUsers';
+import AdminMessages from './components/dashboard/Contact/AdminContact';
 
 const routes = createBrowserRouter([
   {
@@ -46,6 +47,7 @@ const routes = createBrowserRouter([
       { path: "products", element: <AdminProduct /> },
       {path: "orders", element: <AdminOrder /> },
       {path: "users", element: <AdminUsers /> },
+      {path: "messages", element: <AdminMessages /> },
     ],
   },
 ]);
