@@ -88,56 +88,96 @@ class UserController extends Controller
     public function update(Request $request)
     {
         try {
-            $user = Auth::user();
+            $user = $request->has('id') ? User::findOrFail($request->id) : Auth::user();
     
-            // التحقق من المدخلات
             $request->validate([
-                'name' => 'string|max:255',
-                'email' => 'string|email|unique:users,email,' . $user->id,
-                'oldPassword' => 'nullable|string|min:8', // جعلها nullable
+                'name' => 'nullable|string|max:255',
+                'email' => 'nullable|string|email|unique:users,email,' . $user->id,
+                'oldPassword' => 'nullable|string|min:8',
                 'newPassword' => 'nullable|string|min:8|confirmed',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'role' => 'nullable|string|in:user,admin,super_admin',
             ]);
     
-            // التحقق من كلمة المرور القديمة فقط إذا كانت موجودة
-            if ($request->oldPassword && !Hash::check($request->oldPassword, $user->password)) {
-                return response()->json(['message' => 'كلمة المرور القديمة غير صحيحة'], 400);
-            }
-    
-            // تغيير كلمة المرور الجديدة إذا كانت موجودة
-            if ($request->newPassword) {
-                $user->password = bcrypt($request->newPassword);
-            }
-    
-            // رفع الصورة الجديدة إن وجدت
-            if ($request->hasFile('image')) {
-                // حذف الصورة القديمة إن وُجدت
-                if ($user->image && Storage::disk('public')->exists($user->image)) {
-                    \Storage::disk('public')->delete($user->image);
+            if (!$request->has('id')) {
+                if ($request->oldPassword && !Hash::check($request->oldPassword, $user->password)) {
+                    return response()->json(['message' => 'كلمة المرور القديمة غير صحيحة'], 400);
                 }
     
-                $image = $request->file('image');
-                $imageName = time() . '_' . $image->getClientOriginalName();
-                $imagePath = $image->storeAs('profile_images', $imageName, 'public');
-                $user->image = $imagePath;
+                if ($request->newPassword) {
+                    $user->password = bcrypt($request->newPassword);
+                }
+    
+                if ($request->hasFile('image')) {
+                    if ($user->image && Storage::disk('public')->exists($user->image)) {
+                        \Storage::disk('public')->delete($user->image);
+                    }
+    
+                    $image = $request->file('image');
+                    $imageName = time() . '_' . $image->getClientOriginalName();
+                    $imagePath = $image->storeAs('profile_images', $imageName, 'public');
+                    $user->image = $imagePath;
+                }
+    
+                $user->name = $request->name ?? $user->name;
+                $user->email = $request->email ?? $user->email;
             }
     
-            // تحديث البيانات الأخرى
-            $user->name = $request->name;
-            $user->email = $request->email;
+            if (auth()->user()?->hasRole('super_admin')) {
+                if ($request->filled('role')) {
+                    $user->syncRoles([$request->role]);
+                }
+            }
+    
             $user->save();
     
             return response()->json([
-                'message' => 'تم تحديث الملف الشخصي بنجاح',
+                'message' => 'تم التحديث بنجاح',
                 'user' => new UserResource($user),
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'حدث خطأ أثناء تحديث الملف الشخصي.',
+                'message' => 'حدث خطأ أثناء التحديث.',
                 'error' => $e->getMessage(),
             ], 500);
         }
     }
+
+    public function destroy(Request $request, $id = null)
+{
+    try {
+        $user = $id ? User::findOrFail($id) : Auth::user();
+
+        if (!$user) {
+            return response()->json(['message' => 'المستخدم غير موجود'], 404);
+        }
+
+        // منع حذف السوبر أدمن عن طريق الخطأ
+        if ($user->hasRole('super_admin') && auth()->id() !== $user->id) {
+            return response()->json(['message' => 'لا يمكن حذف سوبر أدمن إلا بواسطة نفسه'], 403);
+        }
+
+        // حذف الصورة لو موجودة
+        if ($user->image && Storage::disk('public')->exists($user->image)) {
+            Storage::disk('public')->delete($user->image);
+        }
+
+        $user->delete();
+
+        return response()->json(['message' => 'تم حذف المستخدم بنجاح'], 200);
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'حدث خطأ أثناء الحذف.',
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+}
+
+    
+
+    
+    
+
     
 
 

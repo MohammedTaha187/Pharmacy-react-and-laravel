@@ -117,26 +117,26 @@ class OrderController extends Controller
         if (!$order) {
             return response()->json(['error' => 'Order not found'], 404);
         }
-
+    
+        // التحقق من الـ status
         $validator = validator($request->all(), [
-            'status' => 'required|in:pending,shipped,delivered'
+            'status' => 'required|in:pending,shipped,delivered', // قيم متاحة للحالة
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
         }
-
-        if ($order->status === $request->status) {
-            return response()->json(['message' => 'Order status is already ' . $request->status]);
-        }
-
+    
+        // تحديث حالة الطلب
         $order->update(['status' => $request->status]);
-
+    
         return response()->json([
-            'message' => __('lang.Order status updated successfully'),
-            'order' => new OrderResource($order)
+            'message' => 'تم تحديث حالة الطلب',
+            'order' => new OrderResource($order),
         ]);
     }
+    
+
 
 
 

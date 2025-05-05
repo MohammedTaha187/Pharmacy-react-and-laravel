@@ -16,6 +16,8 @@ import SocialAuth from './SocialAuth';
 import AdminLayout from './components/dashboard/Layout/AdminLayout';
 import AdminHome from './components/dashboard/Home/AdminHome';
 import AdminProduct from './components/dashboard/Product/AdminProduct';
+import AdminOrder from './components/dashboard/Orders/AdminOrders';
+import AdminUsers from './components/dashboard/User/AdminUsers';
 
 const routes = createBrowserRouter([
   {
@@ -39,11 +41,11 @@ const routes = createBrowserRouter([
     ],
   },
   {
-    path: "/admin",
-    element: <AdminLayout />,
-    children: [
+    path: "/admin", element: <AdminLayout />, children: [
       { path: "", element: <AdminHome /> },
       { path: "products", element: <AdminProduct /> },
+      {path: "orders", element: <AdminOrder /> },
+      {path: "users", element: <AdminUsers /> },
     ],
   },
 ]);

@@ -63,13 +63,12 @@ const UpdateProfile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const token = localStorage.getItem("token");
     if (!token) {
       alert("التوكن غير موجود، الرجاء تسجيل الدخول.");
       return;
     }
-
+  
     const formData = new FormData();
     formData.append("_method", "PUT");
     formData.append("name", profile.name);
@@ -77,27 +76,28 @@ const UpdateProfile = () => {
     formData.append("oldPassword", profile.oldPassword);
     formData.append("newPassword", profile.newPassword);
     formData.append("newPassword_confirmation", profile.confirmPassword);
-
+  
     if (selectedImage) {
       formData.append("image", selectedImage);
     }
-
+  
     try {
-      const response = await axios.post(
-        "/api/user/update",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      alert("تم تحديث الملف الشخصي بنجاح!");
+      const response = await axios.post("/api/user/update", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.data.user) {
+        alert("تم تحديث الملف الشخصي بنجاح!");
+      } else {
+        setError("حدث خطأ أثناء التحديث.");
+      }
     } catch (error) {
       setError("فشل في تحديث البيانات، يرجى المحاولة لاحقًا.");
     }
   };
+  
 
   return (
     <section className={styles.updateProfile}>
@@ -112,7 +112,7 @@ const UpdateProfile = () => {
               selectedImage
                 ? URL.createObjectURL(selectedImage)
                 : profile.image
-                ? `/storage/${profile.image}`
+                ? `http://127.0.0.1:8000/storage/${profile.image}`
                 : "/images/default-profile.png"
             }
             alt="صورة المستخدم"

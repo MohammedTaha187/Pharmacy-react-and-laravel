@@ -23,6 +23,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [UserController::class, 'user']);
     Route::post('/logout', [UserController::class, 'logout']);
     Route::put('/user/update', [UserController::class, 'update']);
+    Route::delete('/user/{id?}', [UserController::class, 'destroy']);
 
     Route::get('/categories', [CategoryController::class, 'index']);
     Route::get('/categories/{id}', [CategoryController::class, 'show']);

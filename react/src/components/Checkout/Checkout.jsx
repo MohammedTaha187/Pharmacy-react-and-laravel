@@ -92,7 +92,7 @@ const Checkout = () => {
       });
 
       if (response && response.data) {
-        await axios.post('/cart/clear', {}, {
+        await axios.post('/api/cart/clear', {}, {
           headers: {
             Authorization: `Bearer ${token}`,
             Accept: 'application/json',
