@@ -61,7 +61,6 @@ const Login = () => {
       });
 
       const role = userResponse.data.data.role;
-      console.log("User Role:", role);
 
       if (role === "admin" || role === "super_admin") {
         navigate("/admin");
@@ -81,7 +80,7 @@ const Login = () => {
         <button
           className={`${styles.btn} ${styles.google}`}
           onClick={() => {
-            window.location.href = "/api/auth/google";
+            window.location.href = "http://127.0.0.1:8000/api/auth/google";
           }}
         >
           Login with Google
@@ -90,7 +89,7 @@ const Login = () => {
         <button
           className={`${styles.btn} ${styles.facebook}`}
           onClick={() => {
-            window.location.href = "https://127.0.0.1:8000/api/auth/facebook/callback";
+            window.location.href = "http://127.0.0.1:8000/api/login/facebook";
           }}
         >
           Login with Facebook

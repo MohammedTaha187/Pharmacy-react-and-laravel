@@ -1,66 +1,96 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🏥 Full-Stack Online Pharmacy System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A modern, full-featured online pharmacy platform built with **Laravel 10+** and **React 19 (Vite)**. The system provides a seamless experience for customers to browse medications, manage their cart, and securely pay via PayPal, alongside a robust administrative dashboard for management.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🎨 Design & User Experience
+- **Modern UI:** Clean, professional, and responsive design using Bootstrap 5.
+- **Micro-interactions:** Smooth animations and hover effects for a premium feel.
+- **Multilingual Support:** Ready for English and Arabic (configurable in `.env`).
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 🚀 Key Features
 
-## Learning Laravel
+### 👤 Customer Features
+- **Authentication:** Secure Login/Register with JWT (Laravel Sanctum).
+- **Social Auth:** Fast access via **Google** and **Facebook** login.
+- **Product Discovery:**
+  - Dynamic **Search** for finding specific medications.
+  - **Category-based** browsing.
+  - **Quick View** for product details without leaving the page.
+- **Shopping Experience:**
+  - Real-time **Shopping Cart** management.
+  - Secure **PayPal** payment integration.
+  - **Order Tracking** and history with **Rating** system.
+- **Communication:** **Contact Us** form with real-time feedback.
+- **Profile Management:** Update personal details and view order status.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 🛡️ Admin Dashboard
+- **Analytics:** Overview of stats (Stats are fetched from `api/dashboard-stats`).
+- **Product Management:** Full CRUD operations for medications.
+- **Order Management:** View and update order statuses.
+- **User Management:** Manage registered customers and roles.
+- **Message Center:** Handle customer inquiries from the contact form.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 🛠️ Technology Stack
 
-## Laravel Sponsors
+| Feature | Technology |
+| :--- | :--- |
+| **Backend** | Laravel 10+, PHP 8.x |
+| **Frontend** | React 19, Vite, Bootstrap 5 |
+| **Database** | MySQL / MariaDB |
+| **Authentication** | Laravel Sanctum (SPA) |
+| **Payment Gateways** | PayPal SDK |
+| **State Management** | React Hooks, TanStack Query |
+| **Styling** | Vanilla CSS, FontAwesome |
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## ⚙️ Installation & Setup
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+### 1. Prerequisites
+- PHP >= 8.1
+- Composer
+- Node.js & npm
+- MySQL
 
-## Contributing
+### 2. Backend Setup (Laravel)
+```bash
+git clone https://github.com/MohammedTaha187/Pharmacy-react-and-laravel.git
+cd pharmacy
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed
+php artisan serve
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 3. Frontend Setup (React)
+```bash
+cd react
+npm install
+npm run dev
+```
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 🌐 GitHub Repository Details
+- **Repository:** [MohammedTaha187/Pharmacy-react-and-laravel](https://github.com/MohammedTaha187/Pharmacy-react-and-laravel)
+- **Last Sync:** May 5, 2025
+- **Maintenance:** Active / Fixed major React versioning issues.
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## 🔧 Critical Fixes Applied
+- **React Version Mismatch:** Resolved `react` and `react-dom` versioning conflicts by pinning both to `19.0.0`.
+- **Directory Typos:** Corrected `Producys` typo to `Products` across code and file system.
+- **Environment config:** Optimized `.env` for local development and PayPal sandbox.
 
-## License
+---
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 📄 License
+This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).

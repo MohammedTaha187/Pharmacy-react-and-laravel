@@ -12,9 +12,22 @@ class MessageController extends Controller
 {
 
     public function index()
-    {
-        return response()->json(Message::with('user')->latest()->get());
+{
+    $user = auth()->user();
+
+    if ($user && $user->hasAnyRole(['admin', 'super_admin'])) {
+        return response()->json(
+            Message::with('user')->latest()->get()
+        );
     }
+
+    return response()->json(
+        Message::where('user_id', $user->id)->with('user')->latest()->get()
+    );
+}
+
+    
+
 
 
     public function store(Request $request)

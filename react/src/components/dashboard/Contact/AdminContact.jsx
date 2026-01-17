@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useLayoutEffect, useEffect, useState, useRef } from "react";
 import axios from "../../../axiosInstance";
 import styles from "./AdminContact.module.css";
 import toast from "react-hot-toast";
@@ -7,6 +7,8 @@ const AdminMessages = () => {
   const [groupedConversations, setGroupedConversations] = useState([]);
   const [responseMap, setResponseMap] = useState({});
   const token = localStorage.getItem("token");
+  
+  const messagesEndRef = useRef(null);
 
   useEffect(() => {
     if (!token) return;
@@ -21,6 +23,7 @@ const AdminMessages = () => {
         });
 
         const messages = res.data;
+        console.log("تم تحميل الرسائل:", messages); 
 
         const grouped = {};
         messages.forEach((msg) => {
@@ -34,11 +37,12 @@ const AdminMessages = () => {
           grouped[userId].messages.push(msg);
         });
 
-        // عكس ترتيب الرسائل بحيث تظهر القديمة فوق
-        setGroupedConversations(Object.values(grouped).map(conv => ({
-          ...conv,
-          messages: conv.messages.reverse()  // عكس ترتيب الرسائل داخل كل محادثة
-        })));
+        setGroupedConversations(
+          Object.values(grouped).map((conv) => ({
+            ...conv,
+            messages: conv.messages.reverse(),
+          }))
+        );
       } catch {
         toast.error("فشل في تحميل الرسائل");
       }
@@ -46,6 +50,13 @@ const AdminMessages = () => {
 
     fetchMessages();
   }, [token]);
+
+  useLayoutEffect(() => {
+    // التأكد من التمرير إلى الأسفل بعد تحميل البيانات
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [groupedConversations]); // التحديث عندما تتغير المحادثات
 
   const handleRespond = async (messageId, userId) => {
     const response = responseMap[messageId];
@@ -118,53 +129,59 @@ const AdminMessages = () => {
       {groupedConversations.length === 0 ? (
         <p className={styles.empty}>لا توجد محادثات بعد</p>
       ) : (
-        groupedConversations.map((conv) => (
-          <div key={conv.user.id} className={styles["conversation"]}>
-            <h3 className={styles["user-name"]}>{conv.user.name}</h3>
+        <div className={styles["conversations-container"]}>
+          {groupedConversations.map((conv) => (
+            <div key={conv.user.id} className={styles["conversation"]}>
+              <h3 className={styles["user-name"]}>{conv.user.name}</h3>
+              <div className={styles["messages-box"]}>
+                {conv.messages.map((msg) => (
+                  <div key={msg.id} className={styles["message-wrapper"]}>
+                    <div className={styles["message-bubble"]}>
+                      <span className={styles["sender"]}>العميل:</span>
+                      <p>{msg.message}</p>
+                    </div>
 
-            {conv.messages.map((msg) => (
-              <div key={msg.id} className={styles["message-wrapper"]}>
-                <div className={styles["message-bubble"]}>
-                  <span className={styles["sender"]}>العميل:</span>
-                  <p>{msg.message}</p>
-                </div>
+                    {msg.response ? (
+                      <div
+                        className={`${styles["message-bubble"]} ${styles.admin}`}
+                      >
+                        <span className={styles["sender"]}>الرد:</span>
+                        <p>{msg.response}</p>
+                      </div>
+                    ) : (
+                      <div className={styles["respond-form"]}>
+                        <textarea
+                          placeholder="اكتب الرد هنا"
+                          value={responseMap[msg.id] || ""}
+                          onChange={(e) =>
+                            setResponseMap({
+                              ...responseMap,
+                              [msg.id]: e.target.value,
+                            })
+                          }
+                        />
+                        <button
+                          className={styles.btn}
+                          onClick={() => handleRespond(msg.id, conv.user.id)}
+                        >
+                          إرسال الرد
+                        </button>
+                      </div>
+                    )}
 
-                {msg.response ? (
-                  <div className={`${styles["message-bubble"]} ${styles.admin}`}>
-                    <span className={styles["sender"]}>الرد:</span>
-                    <p>{msg.response}</p>
-                  </div>
-                ) : (
-                  <div className={styles["respond-form"]}>
-                    <textarea
-                      placeholder="اكتب الرد هنا"
-                      value={responseMap[msg.id] || ""}
-                      onChange={(e) =>
-                        setResponseMap({
-                          ...responseMap,
-                          [msg.id]: e.target.value,
-                        })
-                      }
-                    />
                     <button
-                      className={styles.btn}
-                      onClick={() => handleRespond(msg.id, conv.user.id)}
+                      className={styles["delete-btn"]}
+                      onClick={() => handleDelete(msg.id, conv.user.id)}
                     >
-                      إرسال الرد
+                      حذف الرسالة
                     </button>
                   </div>
-                )}
-
-                <button
-                  className={styles["delete-btn"]}
-                  onClick={() => handleDelete(msg.id, conv.user.id)}
-                >
-                  حذف الرسالة
-                </button>
+                ))}
+                <div ref={messagesEndRef}></div>
               </div>
-            ))}
-          </div>
-        ))
+            </div>
+          ))}
+        </div>
       )}
     </section>
   );

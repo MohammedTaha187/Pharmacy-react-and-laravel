@@ -9,7 +9,7 @@ import ShoppingCart from './components/ShoppingCart/ShoppingCart';
 import UpdateProfile from './components/UpdateProfile/UpdateProfile';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
-import Products from './components/Producys/Products';
+import Products from './components/Products/Products';
 import QuickView from './components/QuickView/QuickView';
 import Checkout from './components/Checkout/Checkout';
 import SocialAuth from './SocialAuth';
@@ -19,6 +19,7 @@ import AdminProduct from './components/dashboard/Product/AdminProduct';
 import AdminOrder from './components/dashboard/Orders/AdminOrders';
 import AdminUsers from './components/dashboard/User/AdminUsers';
 import AdminMessages from './components/dashboard/Contact/AdminContact';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const routes = createBrowserRouter([
   {
@@ -26,34 +27,34 @@ const routes = createBrowserRouter([
     element: <Layout />,
     children: [
       { path: "", element: <Login /> },
-      { path: "home", element: <Home /> },
-      { path: "Medications", element: <Categories /> },
-      { path: "products", element: <Products /> },
-      { path: "orders", element: <Orders /> },
-      { path: "about", element: <About /> },
-      { path: "contact", element: <Contact /> },
-      { path: "cart", element: <ShoppingCart /> },
-      { path: "profile", element: <UpdateProfile /> },
+      { path: "home", element: <ProtectedRoute><Home /></ProtectedRoute> },
+      { path: "Medications", element: <ProtectedRoute><Categories /></ProtectedRoute> },
+      { path: "products", element: <ProtectedRoute><Products /></ProtectedRoute> },
+      { path: "orders", element: <ProtectedRoute><Orders /></ProtectedRoute> },
+      { path: "about", element: <ProtectedRoute><About /></ProtectedRoute> },
+      { path: "contact", element: <ProtectedRoute><Contact /></ProtectedRoute> },
+      { path: "cart", element: <ProtectedRoute><ShoppingCart /></ProtectedRoute> },
+      { path: "profile", element: <ProtectedRoute><UpdateProfile /></ProtectedRoute> },
       { path: "login", element: <Login /> },
       { path: "register", element: <Register /> },
-      { path: "quickView/:productId", element: <QuickView /> },
-      { path: "checkout", element: <Checkout /> },
+      { path: "quickView/:productId", element: <ProtectedRoute><QuickView /></ProtectedRoute> },
+      { path: "checkout", element: <ProtectedRoute><Checkout /></ProtectedRoute> },
       { path: "social-auth", element: <SocialAuth /> },
     ],
   },
   {
-    path: "/admin", element: <AdminLayout />, children: [
-      { path: "", element: <AdminHome /> },
-      { path: "products", element: <AdminProduct /> },
-      {path: "orders", element: <AdminOrder /> },
-      {path: "users", element: <AdminUsers /> },
-      {path: "messages", element: <AdminMessages /> },
+    path: "/admin", element: <ProtectedRoute><AdminLayout /></ProtectedRoute>, children: [
+      { path: "", element: <ProtectedRoute><AdminHome /></ProtectedRoute> },
+      { path: "products", element: <ProtectedRoute><AdminProduct /></ProtectedRoute> },
+      { path: "orders", element: <ProtectedRoute><AdminOrder /></ProtectedRoute> },
+      { path: "users", element: <ProtectedRoute><AdminUsers /></ProtectedRoute> },
+      { path: "messages", element: <ProtectedRoute><AdminMessages /></ProtectedRoute> },
     ],
   },
 ]);
 
 function App() {
-    return <RouterProvider router={routes} />;
+  return <RouterProvider router={routes} />;
 }
 
 export default App;

@@ -3,76 +3,111 @@
     background-color: #f8f9fa;
     min-height: 100vh;
     font-family: "Cairo", sans-serif;
-}
-
-/* العنوان */
-.title {
+  }
+  
+  /* العنوان */
+  .title {
     text-align: center;
     font-size: 2.2rem;
     font-weight: bold;
     color: #343a40;
     margin-bottom: 2rem;
-}
-
-/* المحادثة مع المستخدم */
-.conversation {
+  }
+  
+  /* الحاوية اللي تضم كل المحادثات */
+  .conversations-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: start;
+    align-items: flex-start;
+  }
+  
+  /* كل محادثة */
+  .conversation {
     background: #ffffff;
     padding: 1.5rem;
-    margin-bottom: 2rem;
     border-radius: 1rem;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-}
-
-.user-name {
+    width: 350px;
+    flex-shrink: 0;
+  }
+  
+  /* اسم المستخدم */
+  .user-name {
     font-size: 1.5rem;
     font-weight: bold;
     color: #343a40;
     margin-bottom: 1rem;
     border-bottom: 1px solid #dee2e6;
     padding-bottom: 0.5rem;
-}
-
-/* فقاعات الرسائل */
-.message-wrapper {
+  }
+  
+  /* فقاعات الرسائل */
+  .message-wrapper {
     margin-bottom: 1.5rem;
-}
+  }
 
-.message-bubble {
+  .messages-box {
+    max-height: 300px; /* أو 400px حسب ما تحب */
+    overflow-y: auto;
+    padding-right: 5px;
+    margin-bottom: 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.75rem;
+    background-color: #f8f9fa;
+  }
+  .messages-box::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .messages-box::-webkit-scrollbar-thumb {
+    background-color: #adb5bd;
+    border-radius: 4px;
+  }
+  
+  .messages-box::-webkit-scrollbar-thumb:hover {
+    background-color: #6c757d;
+  }
+  
+  
+  
+  .message-bubble {
     background-color: #e9ecef;
     color: #212529;
     padding: 1rem 1.25rem;
     border-radius: 1rem;
-    max-width: 80%;
+    max-width: 100%;
     margin-bottom: 0.5rem;
     position: relative;
     transition: all 0.3s ease;
-}
-
-.message-bubble .sender {
+  }
+  
+  .message-bubble .sender {
     font-weight: bold;
     color: #495057;
     display: block;
     margin-bottom: 0.5rem;
-}
-
-/* فقاعات الرد (admin) */
-.admin {
-    background-color: #343a40; /* اللون الداكن في AdminOrder */
+  }
+  
+  /* فقاعات الرد (admin) */
+  .admin {
+    background-color: #343a40;
     color: #fff;
     margin-left: auto;
-}
-
-.respond-form {
+  }
+  
+  .respond-form {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
     background-color: #f1f3f5;
     padding: 1rem;
     border-radius: 1rem;
-    position: relative; /* لجعل الزر ثابت في الأسفل */
-}
-
-.respond-form textarea {
+    position: relative;
+  }
+  
+  .respond-form textarea {
     width: 100%;
     padding: 0.75rem;
     border-radius: 0.5rem;
@@ -82,20 +117,19 @@
     font-size: 1rem;
     min-height: 80px;
     transition: border-color 0.3s ease;
-}
-
-.respond-form textarea:focus {
+  }
+  
+  .respond-form textarea:focus {
     outline: none;
-    border-color: #343a40;  /* نفس اللون الداكن من AdminOrder */
-}
-
-/* زر الإرسال في الأسفل */
-.btn {
+    border-color: #343a40;
+  }
+  
+  .btn {
     position: absolute;
-    bottom: 1rem; /* يظل الزر في الأسفل */
+    bottom: 1rem;
     left: 50%;
-    transform: translateX(-50%); /* توسيط الزر */
-    background-color: #ffc107;  /* نفس اللون الأصفر من AdminOrder */
+    transform: translateX(-50%);
+    background-color: #ffc107;
     color: #343a40;
     padding: 0.5rem 1.25rem;
     border: none;
@@ -103,15 +137,14 @@
     cursor: pointer;
     font-weight: bold;
     transition: background-color 0.3s ease;
-}
-
-.btn:hover {
-    background-color: #e0a800; /* لون مائل للأصفر الداكن عند التمرير */
-}
-
-/* زر الحذف */
-.delete-btn {
-    background-color: #dc3545; /* نفس اللون الأحمر من AdminOrder */
+  }
+  
+  .btn:hover {
+    background-color: #e0a800;
+  }
+  
+  .delete-btn {
+    background-color: #dc3545;
     color: #fff;
     padding: 0.5rem 1.25rem;
     border: none;
@@ -120,15 +153,16 @@
     font-weight: bold;
     margin-top: 1rem;
     transition: background-color 0.3s ease;
-}
-
-.delete-btn:hover {
-    background-color: #c82333; /* لون مائل للأحمر الداكن عند التمرير */
-}
-
-.empty {
+  }
+  
+  .delete-btn:hover {
+    background-color: #c82333;
+  }
+  
+  .empty {
     text-align: center;
     font-size: 1.2rem;
     color: #6c757d;
     margin-top: 2rem;
-}
+  }
+  

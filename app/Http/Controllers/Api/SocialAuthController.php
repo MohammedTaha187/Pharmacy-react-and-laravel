@@ -40,6 +40,7 @@ class SocialAuthController extends Controller
             // Redirect to frontend with token in URL
             return redirect()->away("http://localhost:5173/social-auth?token=$token");
         } catch (\Exception $e) {
+            \Log::error('Google Login Error: ' . $e->getMessage());
             return redirect()->away('http://localhost:5173/login?error=something_went_wrong');
         }
     }
@@ -78,6 +79,7 @@ class SocialAuthController extends Controller
             return redirect()->away("http://localhost:5173/social-auth?token=$token");
 
         } catch (\Exception $e) {
+            \Log::error('Facebook Login Error: ' . $e->getMessage());
             return redirect()->away('http://localhost:5173/login?error=something_went_wrong');
         }
     }
